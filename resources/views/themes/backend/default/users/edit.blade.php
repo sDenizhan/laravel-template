@@ -1,4 +1,21 @@
-@extends('layouts.app')
+@extends('themes.backend.default.layouts.app')
+
+
+@section('pre-content')
+    @php
+        $data = [
+            [
+                'title' => __('Users'),
+                'url' => route('admin.users.index')
+            ],
+            [
+                'title' => __('Edit User'),
+                'url' => ''
+            ]
+        ];
+    @endphp
+    <x-backend.breadcrumbs title="{{ __('Users') }}" :links="$data" />
+@endsection
 
 @section('content')
 <div class="row justify-content-center">
@@ -56,7 +73,7 @@
 
                     <div class="mb-3 row">
                         <label for="roles" class="col-md-4 col-form-label text-md-end text-start">Roles</label>
-                        <div class="col-md-6">           
+                        <div class="col-md-6">
                             <select class="form-select @error('roles') is-invalid @enderror" multiple aria-label="Roles" id="roles" name="roles[]">
                                 @forelse ($roles as $role)
 
@@ -65,7 +82,7 @@
                                         {{ $role }}
                                     </option>
                                     @else
-                                        @if (Auth::user()->hasRole('Super Admin'))   
+                                        @if (Auth::user()->hasRole('Super Admin'))
                                         <option value="{{ $role }}" {{ in_array($role, $userRoles ?? []) ? 'selected' : '' }}>
                                             {{ $role }}
                                         </option>
@@ -81,14 +98,14 @@
                             @endif
                         </div>
                     </div>
-                    
+
                     <div class="mb-3 row">
                         <input type="submit" class="col-md-3 offset-md-5 btn btn-primary" value="Update User">
                     </div>
-                    
+
                 </form>
             </div>
         </div>
     </div>
-</div>    
+</div>
 @endsection

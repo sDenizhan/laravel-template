@@ -1,4 +1,20 @@
-@extends('layouts.app')
+@extends('themes.backend.default.layouts.app')
+
+@section('pre-content')
+    @php
+        $data = [
+            [
+                'title' => __('Roles'),
+                'url' => route('admin.roles.index')
+            ],
+            [
+                'title' => __('Show Role'),
+                'url' => ''
+            ]
+        ];
+    @endphp
+    <x-backend.breadcrumbs title="{{ __('Roles') }}" :links="$data" />
+@endsection
 
 @section('content')
 <div class="row justify-content-center">
@@ -37,5 +53,5 @@
             </div>
         </div>
     </div>
-</div>    
+</div>
 @endsection

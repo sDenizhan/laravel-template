@@ -1,4 +1,21 @@
-@extends('layouts.app')
+@extends('themes.backend.default.layouts.app')
+
+
+@section('pre-content')
+    @php
+        $data = [
+            [
+                'title' => __('Users'),
+                'url' => route('admin.users.index')
+            ],
+            [
+                'title' => __('Show User'),
+                'url' => ''
+            ]
+        ];
+    @endphp
+    <x-backend.breadcrumbs title="{{ __('Users') }}" :links="$data" />
+@endsection
 
 @section('content')
 <div class="row justify-content-center">
@@ -40,5 +57,5 @@
             </div>
         </div>
     </div>
-</div>    
+</div>
 @endsection
