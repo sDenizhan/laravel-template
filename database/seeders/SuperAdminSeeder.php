@@ -16,26 +16,18 @@ class SuperAdminSeeder extends Seeder
     {
         // Creating Super Admin User
         $superAdmin = User::create([
-            'name' => 'Javed Ur Rehman', 
-            'email' => 'javed@allphptricks.com',
-            'password' => Hash::make('javed1234')
+            'name' => 'Suleyman Denizhan',
+            'email' => 'suleyman.denizhan@gmail.com',
+            'password' => Hash::make('suleyman1234')
         ]);
         $superAdmin->assignRole('Super Admin');
 
         // Creating Admin User
         $admin = User::create([
-            'name' => 'Syed Ahsan Kamal', 
-            'email' => 'ahsan@allphptricks.com',
-            'password' => Hash::make('ahsan1234')
+            'name' => 'Sinan Gülbaş',
+            'email' => 'ismailsinan@gmail.com',
+            'password' => Hash::make('ismail1234')
         ]);
         $admin->assignRole('Admin');
-
-        // Creating Product Manager User
-        $productManager = User::create([
-            'name' => 'Abdul Muqeet', 
-            'email' => 'muqeet@allphptricks.com',
-            'password' => Hash::make('muqeet1234')
-        ]);
-        $productManager->assignRole('Product Manager');
     }
 }
