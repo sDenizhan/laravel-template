@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreStatusRequest;
+use App\Http\Requests\UpdateStatusRequest;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class StatusController extends Controller
@@ -12,7 +15,8 @@ class StatusController extends Controller
      */
     public function index()
     {
-        //
+        $statuses = Status::all();
+        return view('status.index', compact('statuses'));
     }
 
     /**
@@ -20,15 +24,22 @@ class StatusController extends Controller
      */
     public function create()
     {
-        //
+        return view('status.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreStatusRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $store = Status::create([
+            'name' => $validated['name'],
+            'section' => $validated['section']
+        ]);
+
+        return redirect()->route('admin.status.create')->with('success', 'Status created successfully');
     }
 
     /**
@@ -44,15 +55,23 @@ class StatusController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $status = Status::find($id);
+        return view('status.edit', compact('status'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateStatusRequest $request, string $id)
     {
-        //
+        $validated = $request->validated();
+
+        $status = Status::find($id);
+        $status->name = $validated['name'];
+        $status->section = $validated['section'];
+        $status->save();
+
+        return redirect()->route('admin.status.edit', $id)->with('success', 'Status updated successfully');
     }
 
     /**
@@ -60,6 +79,7 @@ class StatusController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Status::destroy($id);
+        return redirect()->route('admin.status.index')->with('success', 'Status deleted successfully');
     }
 }

@@ -5,7 +5,7 @@
         $data = [
             [
                 'title' => __('Statuses'),
-                'url' => route('admin.permissions.index')
+                'url' => route('admin.status.index')
             ],
             [
                 'title' => __('Index'),
@@ -13,7 +13,7 @@
             ]
         ];
     @endphp
-    <x-backend.breadcrumbs title="{{ __('Permissions') }}" :links="$data" />
+    <x-backend.breadcrumbs title="{{ __('Statuses') }}" :links="$data" />
 @endsection
 
 @section('content')
@@ -23,7 +23,7 @@
             <div class="card-header">
                 <ul class="nav nav-pills card-header-pills">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('admin.permissions.create') }}">{{ __('Add New') }}</a>
+                        <a class="nav-link active" href="{{ route('admin.status.create') }}">{{ __('Add New') }}</a>
                     </li>
                 </ul>
             </div>
@@ -32,23 +32,23 @@
                     <thead>
                         <tr>
                             <th>{{ __('Name') }}</th>
-                            <th>{{ __('Guard') }}</th>
+                            <th>{{ __('Section') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($permissions as $permission)
+                        @foreach ($statuses as $status)
                             <tr>
-                                <td>{{ $permission->name }}</td>
-                                <td>{{ $permission->guard_name }}</td>
+                                <td>{{ $status->name }}</td>
+                                <td>{{ $status->section }}</td>
                                 <td>
 
                                     @can('delete-permission')
-                                        <form action="{{ route('admin.permissions.destroy', $permission->id) }}" method="post">
+                                        <form action="{{ route('admin.status.destroy', $status->id) }}" method="post">
                                             @csrf
                                             @method('DELETE')
 
-                                            <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                            <a href="{{ route('admin.status.edit', $status->id) }}" class="btn btn-sm btn-primary">Edit</a>
 
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>

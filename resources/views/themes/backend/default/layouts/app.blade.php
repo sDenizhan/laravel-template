@@ -101,36 +101,37 @@
                             </a>
                         </li>
 
-                        @can('view-treatments')
+                        <li class="menu-title">Inquires</li>
 
-                            <li class="menu-title">{{ __('Treatments') }}</li>
 
-                            <li class="menu-item">
-                                <a href="#menuTreatments" data-bs-toggle="collapse" class="menu-link">
-                                    <span class="menu-icon"><i data-feather="briefcase"></i></span>
-                                    <span class="menu-text"> {{ __('Treatments')  }}</span>
-                                    <span class="menu-arrow"></span>
-                                </a>
-                                <div class="collapse" id="menuTreatments">
-                                    <ul class="sub-menu">
-                                        <li class="menu-item">
-                                            <a href="{{ route('admin.treatments.index') }}" class="menu-link">
-                                                <span class="menu-text">{{ __('Treatments') }}</span>
-                                            </a>
-                                        </li>
-                                        <li class="menu-item">
-                                            <a href="{{ route('admin.treatments.create') }}" class="menu-link">
-                                                <span class="menu-text">{{ __('Add Treatment') }}</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                        @endcan
 
                         @role('Super Admin')
 
                             <li class="menu-title">{{ __('Settings') }}</li>
+
+                            @can('view-treatments')
+                                <li class="menu-item">
+                                    <a href="#menuTreatments" data-bs-toggle="collapse" class="menu-link">
+                                        <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                        <span class="menu-text"> {{ __('Treatments')  }}</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <div class="collapse" id="menuTreatments">
+                                        <ul class="sub-menu">
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.treatments.index') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Treatments') }}</span>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.treatments.create') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Add Treatment') }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endcan
 
                             @can('view-statuses')
                                 <li class="menu-item">

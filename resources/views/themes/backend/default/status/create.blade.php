@@ -4,8 +4,8 @@
     @php
         $data = [
             [
-                'title' => __('Permissions'),
-                'url' => route('admin.permissions.index')
+                'title' => __('Statuses'),
+                'url' => route('admin.status.index')
             ],
             [
                 'title' => __('Add New'),
@@ -13,14 +13,14 @@
             ]
         ];
     @endphp
-    <x-backend.breadcrumbs title="{{ __('Add New Permission') }}" :links="$data" />
+    <x-backend.breadcrumbs title="{{ __('Add New') }}" :links="$data" />
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <form action="{{ route('admin.permissions.store') }}" method="POST">
+            <form action="{{ route('admin.status.store') }}" method="POST">
                 @csrf
                 <div class="card-body">
                     <div class="mb-3">
@@ -31,9 +31,12 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="guard_name" class="form-label">{{ __('Guard') }}</label>
-                        <input type="text" name="guard_name" id="guard_name" class="form-control" placeholder="{{ __('Guard') }}" value="{{ old('guard_name') }}">
-                        @error('guard_name')
+                        <label for="section" class="form-label">{{ __('Section') }}</label>
+                        <select name="section" id="section" class="form-control">
+                            <option value="waiting_inquiry">Waiting Inquiry</option>
+                            <opiton value="accepted_inquiry">Accepted Inquiry</opiton>
+                        </select>
+                        @error('section')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -42,6 +45,13 @@
                     <button type="submit" class="btn btn-sm btn-primary">{{ __('Save') }}</button>
                 </div>
             </form>
+            <div class="col-12">
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </div>
