@@ -101,9 +101,33 @@
                             </a>
                         </li>
 
-                        <li class="menu-title">Inquires</li>
+                        @can('view-inquires')
 
+                            <li class="menu-title">Inquires</li>
 
+                            <li class="menu-item">
+                                <a href="#menuInquires" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                    <span class="menu-text"> {{ __('Inquires')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="menuInquires">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.inquiries.waiting') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Waiting Inquiries') }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.inquiries.approved') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Approved Inquire') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                        @endcan
 
                         @role('Super Admin')
 

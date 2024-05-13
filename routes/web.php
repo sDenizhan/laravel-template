@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\TreatmentController;
 use Illuminate\Support\Facades\Auth;
@@ -36,5 +37,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         'permissions' => PermissionController::class,
         'treatments' => TreatmentController::class,
         'status' => StatusController::class,
+        'inquiries' => InquiryController::class,
     ]);
+
+    Route::get('/inquiries/waiting', [InquiryController::class, 'waiting'])->name('inquiries.waiting');
+    Route::get('/inquiries/approved', [InquiryController::class, 'approved'])->name('inquiries.approved');
 });
