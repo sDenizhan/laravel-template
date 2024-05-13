@@ -126,78 +126,103 @@
                                     </ul>
                                 </div>
                             </li>
-
                         @endcan
 
-                        <li class="menu-title">{{ __('Users') }}</li>
+                        @role('Super Admin')
 
-                        <li class="menu-item">
-                            <a href="#menuUsers" data-bs-toggle="collapse" class="menu-link">
-                                <span class="menu-icon"><i data-feather="users"></i></span>
-                                <span class="menu-text"> {{ __('Users')  }}</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="menuUsers">
-                                <ul class="sub-menu">
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.users.index') }}" class="menu-link">
-                                            <span class="menu-text">{{ __('Users') }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.users.create') }}" class="menu-link">
-                                            <span class="menu-text">{{ __('Add User') }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            <li class="menu-title">{{ __('Settings') }}</li>
 
-                        <li class="menu-item">
-                            <a href="#menuRoles" data-bs-toggle="collapse" class="menu-link">
-                                <span class="menu-icon"><i data-feather="users"></i></span>
-                                <span class="menu-text"> {{ __('Roles')  }}</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="menuRoles">
-                                <ul class="sub-menu">
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.roles.index') }}" class="menu-link">
-                                            <span class="menu-text">{{ __('Roles') }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.roles.create') }}" class="menu-link">
-                                            <span class="menu-text">{{ __('Add Role') }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            @can('view-statuses')
+                                <li class="menu-item">
+                                    <a href="#menuStatuses" data-bs-toggle="collapse" class="menu-link">
+                                        <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                        <span class="menu-text"> {{ __('Statuses')  }}</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <div class="collapse" id="menuStatuses">
+                                        <ul class="sub-menu">
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.status.index') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Statuses') }}</span>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.status.create') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Add Status') }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endcan
 
-                        <li class="menu-item">
-                            <a href="#menuPerms" data-bs-toggle="collapse" class="menu-link">
-                                <span class="menu-icon"><i data-feather="users"></i></span>
-                                <span class="menu-text"> {{ __('Permissions')  }}</span>
-                                <span class="menu-arrow"></span>
-                            </a>
-                            <div class="collapse" id="menuPerms">
-                                <ul class="sub-menu">
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.permissions.index') }}" class="menu-link">
-                                            <span class="menu-text">{{ __('Permissions') }}</span>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.permissions.create') }}" class="menu-link">
-                                            <span class="menu-text">{{ __('Add Permission') }}</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            <li class="menu-item">
+                                <a href="#menuUsers" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="users"></i></span>
+                                    <span class="menu-text"> {{ __('Users')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="menuUsers">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.users.index') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Users') }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.users.create') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Add User') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
 
-                        <li class="menu-title">Custom</li>
+                            <li class="menu-item">
+                                <a href="#menuRoles" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="users"></i></span>
+                                    <span class="menu-text"> {{ __('Roles')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="menuRoles">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.roles.index') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Roles') }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.roles.create') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Add Role') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="menu-item">
+                                <a href="#menuPerms" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="users"></i></span>
+                                    <span class="menu-text"> {{ __('Permissions')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="menuPerms">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.permissions.index') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Permissions') }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.permissions.create') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Add Permission') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                        @endrole
 
                     </ul>
                     <!--- End Menu -->
