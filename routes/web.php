@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\StatusController;
+use App\Http\Controllers\Admin\TreatmentController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\RoleController;
@@ -24,7 +26,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    
+
     Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index']);
     Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
@@ -32,5 +34,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         'roles' => RoleController::class,
         'users' => UserController::class,
         'permissions' => PermissionController::class,
+        'treatments' => TreatmentController::class,
+        'status' => StatusController::class,
     ]);
 });

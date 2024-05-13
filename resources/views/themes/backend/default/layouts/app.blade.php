@@ -33,7 +33,7 @@
         <div id="wrapper">
 
             <!-- ========== Menu ========== -->
-            <div class="app-menu">  
+            <div class="app-menu">
 
                 <!-- Brand Logo -->
                 <div class="logo-box">
@@ -101,6 +101,34 @@
                             </a>
                         </li>
 
+                        @can('view-treatments')
+
+                            <li class="menu-title">{{ __('Treatments') }}</li>
+
+                            <li class="menu-item">
+                                <a href="#menuTreatments" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                    <span class="menu-text"> {{ __('Treatments')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="menuTreatments">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.treatments.index') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Treatments') }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.treatments.create') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Add Treatment') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                        @endcan
+
                         <li class="menu-title">{{ __('Users') }}</li>
 
                         <li class="menu-item">
@@ -129,7 +157,7 @@
                             <a href="#menuRoles" data-bs-toggle="collapse" class="menu-link">
                                 <span class="menu-icon"><i data-feather="users"></i></span>
                                 <span class="menu-text"> {{ __('Roles')  }}</span>
-                                <span class="menu-arrow"></span>                            
+                                <span class="menu-arrow"></span>
                             </a>
                             <div class="collapse" id="menuRoles">
                                 <ul class="sub-menu">
@@ -151,7 +179,7 @@
                             <a href="#menuPerms" data-bs-toggle="collapse" class="menu-link">
                                 <span class="menu-icon"><i data-feather="users"></i></span>
                                 <span class="menu-text"> {{ __('Permissions')  }}</span>
-                                <span class="menu-arrow"></span>                            
+                                <span class="menu-arrow"></span>
                             </a>
                             <div class="collapse" id="menuPerms">
                                 <ul class="sub-menu">
@@ -178,7 +206,7 @@
             </div>
             <!-- ========== Left menu End ========== -->
 
-        
+
             <!-- ============================================================== -->
             <!-- Start Page Content here -->
             <!-- ============================================================== -->
@@ -308,7 +336,7 @@
 
                                     <div class="dropdown-divider"></div>
 
-                                    <a class="dropdown-item notify-item" href="{{ route('logout') }}" 
+                                    <a class="dropdown-item notify-item" href="{{ route('logout') }}"
                                             onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
                                         <i class="fe-log-out"></i>
@@ -328,12 +356,12 @@
                 <div class="content">
 
                     <!-- Start Content-->
-                    <div class="container-fluid"> 
+                    <div class="container-fluid">
 
                         @yield('pre-content')
 
                         @yield('content')
-                        
+
                     </div> <!-- container -->
 
                 </div> <!-- content -->
@@ -361,7 +389,7 @@
 
         </div>
         <!-- END wrapper -->
-        
+
         <!-- Vendor js -->
         <script src="{{ asset('themes/backend/default/assets/js/vendor.min.js')}}"></script>
 
