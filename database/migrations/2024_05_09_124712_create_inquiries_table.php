@@ -29,6 +29,10 @@ return new class extends Migration
             $table->integer('assignment_to')->default(0); // 0 => Atanmayanlar 0> = Atananlar
             $table->timestamp('assignment_at')->nullable();
 
+            $table->text('extra_data1')->nullable();
+            $table->text('extra_data2')->nullable();
+            $table->text('extra_data3')->nullable();
+
             $table->foreign('treatment_id')->references('id')->on('treatments')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
