@@ -23,4 +23,9 @@ class MedicalForm extends Model
     {
         return $this->hasMany(MedicalFormQuestion::class, 'medical_form_id', 'id');
     }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class, 'language_id', 'id');
+    }
 }

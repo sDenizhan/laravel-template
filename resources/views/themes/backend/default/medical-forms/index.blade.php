@@ -39,6 +39,9 @@
                         <li class="nav-item">
                             <a class="nav-link active" href="{{ route('admin.medical-forms.create') }}">{{ __('Add New') }}</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.medical-forms.import') }}">{{ __('Import') }}</a>
+                        </li>
                     </ul>
                 </div>
                 <div class="card-body">
@@ -47,6 +50,7 @@
                         <tr>
                             <th>{{ __('Name') }}</th>
                             <th>{{ __('Treatment') }}</th>
+                            <th>{{ __('Form Language') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                         </thead>
@@ -55,6 +59,7 @@
                             <tr>
                                 <td>{{ $form->title }}</td>
                                 <td>{{ $form->treatment->name }}</td>
+                                <td>{{ $form->language->name }}</td>
                                 <td>
 
                                     @can('delete-medical-forms')
@@ -64,6 +69,7 @@
 
                                             <a href="{{ route('admin.medical-forms.edit', $form->id) }}" class="btn btn-sm btn-primary">Edit</a>
                                             <a href="{{ route('admin.medical-form-questions.add-question', $form->id) }}" class="btn btn-sm btn-secondary">Questions</a>
+                                            <a href="{{ route('admin.medical-forms.export', ['formId' => $form->id]) }}" class="btn btn-sm btn-info">Export</a>
 
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>

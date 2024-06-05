@@ -48,13 +48,13 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        $input = $request->all();
+        $input = $request->validated();
         $input['password'] = Hash::make($request->password);
 
-        $user = User::create($input);
+        $user = User::create(collect($input)->except('roles')->toArray());
         $user->assignRole($request->roles);
 
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users.index')
                 ->withSuccess('New user is added successfully.');
     }
 
@@ -90,13 +90,13 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
         $input = $request->all();
- 
+
         if(!empty($request->password)){
             $input['password'] = Hash::make($request->password);
         }else{
             $input = $request->except('password');
         }
-        
+
         $user->update($input);
 
         $user->syncRoles($request->roles);
@@ -118,7 +118,7 @@ class UserController extends Controller
 
         $user->syncRoles([]);
         $user->delete();
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users.index')
                 ->withSuccess('User is deleted successfully.');
     }
 }

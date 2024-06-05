@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('language_id')->unsigned();
             $table->string('name');
-            $table->string('');
             $table->timestamps();
             $table->softDeletes();
 

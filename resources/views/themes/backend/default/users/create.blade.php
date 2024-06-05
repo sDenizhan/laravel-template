@@ -32,7 +32,7 @@
             <div class="card-body">
                 <form action="{{ route('admin.users.store') }}" method="post">
                     @csrf
-
+                    @method('POST')
                     <div class="mb-3 row">
                         <label for="name" class="col-md-4 col-form-label text-md-end text-start">Name</label>
                         <div class="col-md-6">
