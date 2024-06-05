@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('enquiries', function (Blueprint $table) {
+        Schema::create('inquiries', function (Blueprint $table) {
             $table->id();
             $table->integer('treatment_id');
-            $table->integer('status')->default(0); //onaylandı, reddedildi, bekliyor,
+            $table->integer('status')->default(\App\Enums\StatusWaitingInquiry::WAITING->value); //onaylandı, reddedildi, bekliyor,
             $table->integer('gender')->default(\App\Enums\Gender::None->value);
 
             $table->text('name');

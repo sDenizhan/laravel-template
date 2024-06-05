@@ -4,8 +4,8 @@
     @php
         $data = [
             [
-                'title' => __('Permissions'),
-                'url' => route('admin.permissions.index')
+                'title' => __('Hospital'),
+                'url' => route('admin.hospitals.index')
             ],
             [
                 'title' => __('Index'),
@@ -13,7 +13,7 @@
             ]
         ];
     @endphp
-    <x-backend.breadcrumbs title="{{ __('Permissions') }}" :links="$data" />
+    <x-backend.breadcrumbs title="{{ __('Hospital') }}" :links="$data" />
 @endsection
 
 @section('content')
@@ -23,7 +23,7 @@
             <div class="card-header">
                 <ul class="nav nav-pills card-header-pills">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('admin.permissions.create') }}">{{ __('Add New') }}</a>
+                        <a class="nav-link active" href="{{ route('admin.hospitals.create') }}">{{ __('Add New') }}</a>
                     </li>
                 </ul>
             </div>
@@ -32,27 +32,29 @@
                     <thead>
                         <tr>
                             <th>{{ __('Name') }}</th>
-                            <th>{{ __('Guard') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Doctor Count') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($permissions as $permission)
+                        @foreach ($hospitals as $hospital)
                             <tr>
-                                <td>{{ $permission->name }}</td>
-                                <td>{{ $permission->guard_name }}</td>
+                                <td>{{ $hospital->name }}</td>
+                                <td>{{ \App\Enums\Status::from($hospital->status)->name }}</td>
+                                <td>{{ $hospital->users->count() ?? '0' }}</td>
                                 <td>
+                                    <form action="{{ route('admin.hospitals.destroy', $hospital->id) }}" method="post">
+                                        @csrf
+                                        @method('DELETE')
 
-                                    @can('delete-permission')
-                                        <form action="{{ route('admin.permissions.destroy', $permission->id) }}" method="post">
-                                            @csrf
-                                            @method('DELETE')
+                                        <a href="{{ route('admin.hospitals.show', $hospital->id) }}" class="btn btn-sm btn-secondary"><i class="fas fa-eye"></i></a>
+                                        <a href="{{ route('admin.hospitals.edit', $hospital->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
 
-                                            <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="btn btn-sm btn-primary">Edit</a>
-
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
-                                    @endcan
+                                        @can('delete-hospitals')
+                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-recycle"></i></button>
+                                        @endcan
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

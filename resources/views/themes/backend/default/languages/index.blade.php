@@ -4,8 +4,8 @@
     @php
         $data = [
             [
-                'title' => __('Permissions'),
-                'url' => route('admin.permissions.index')
+                'title' => __('Languages'),
+                'url' => route('admin.languages.index')
             ],
             [
                 'title' => __('Index'),
@@ -13,7 +13,7 @@
             ]
         ];
     @endphp
-    <x-backend.breadcrumbs title="{{ __('Permissions') }}" :links="$data" />
+    <x-backend.breadcrumbs title="{{ __('Languages') }}" :links="$data" />
 @endsection
 
 @section('content')
@@ -23,7 +23,7 @@
             <div class="card-header">
                 <ul class="nav nav-pills card-header-pills">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('admin.permissions.create') }}">{{ __('Add New') }}</a>
+                        <a class="nav-link active" href="{{ route('admin.languages.create') }}">{{ __('Add New') }}</a>
                     </li>
                 </ul>
             </div>
@@ -32,23 +32,25 @@
                     <thead>
                         <tr>
                             <th>{{ __('Name') }}</th>
-                            <th>{{ __('Guard') }}</th>
+                            <th>{{ __('Short Code') }}</th>
+                            <th>{{ __('Sort') }}</th>
                             <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($permissions as $permission)
+                        @foreach ($languages as $language)
                             <tr>
-                                <td>{{ $permission->name }}</td>
-                                <td>{{ $permission->guard_name }}</td>
+                                <td>{{ $language->name }}</td>
+                                <td>{{ $language->code }}</td>
+                                <td>{{ $language->sort }}</td>
                                 <td>
 
-                                    @can('delete-permission')
-                                        <form action="{{ route('admin.permissions.destroy', $permission->id) }}" method="post">
+                                    @can('delete-language')
+                                        <form action="{{ route('admin.languages.destroy', $language->id) }}" method="post">
                                             @csrf
                                             @method('DELETE')
 
-                                            <a href="{{ route('admin.permissions.edit', $permission->id) }}" class="btn btn-sm btn-primary">Edit</a>
+                                            <a href="{{ route('admin.languages.edit', $language->id) }}" class="btn btn-sm btn-primary">Edit</a>
 
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>

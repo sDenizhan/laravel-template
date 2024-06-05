@@ -27,7 +27,7 @@ class RoleController extends Controller
     public function index(): View
     {
         return view('roles.index', [
-            'roles' => Role::orderBy('id','DESC')->paginate(3)
+            'roles' => Role::orderBy('id','DESC')->paginate(75)
         ]);
     }
 
@@ -49,10 +49,10 @@ class RoleController extends Controller
         $role = Role::create(['name' => $request->name]);
 
         $permissions = Permission::whereIn('id', $request->permissions)->get(['name'])->toArray();
-        
+
         $role->syncPermissions($permissions);
 
-        return redirect()->route('roles.index')
+        return redirect()->route('admin.roles.index')
                 ->withSuccess('New role is added successfully.');
     }
 
@@ -102,8 +102,8 @@ class RoleController extends Controller
 
         $permissions = Permission::whereIn('id', $request->permissions)->get(['name'])->toArray();
 
-        $role->syncPermissions($permissions);    
-        
+        $role->syncPermissions($permissions);
+
         return redirect()->back()
                 ->withSuccess('Role is updated successfully.');
     }
@@ -120,7 +120,7 @@ class RoleController extends Controller
             abort(403, 'CAN NOT DELETE SELF ASSIGNED ROLE');
         }
         $role->delete();
-        return redirect()->route('roles.index')
+        return redirect()->route('admin.roles.index')
                 ->withSuccess('Role is deleted successfully.');
     }
 }

@@ -29,10 +29,7 @@
 
     <body>
 
-        <!-- Begin page -->
         <div id="wrapper">
-
-            <!-- ========== Menu ========== -->
             <div class="app-menu">
 
                 <!-- Brand Logo -->
@@ -120,7 +117,7 @@
                                         </li>
                                         <li class="menu-item">
                                             <a href="{{ route('admin.inquiries.approved') }}" class="menu-link">
-                                                <span class="menu-text">{{ __('Approved Inquire') }}</span>
+                                                <span class="menu-text">{{ __('Approved Inquires') }}</span>
                                             </a>
                                         </li>
                                     </ul>
@@ -129,9 +126,34 @@
 
                         @endcan
 
-                        @role('Super Admin')
+                        @hasanyrole('Super Admin|Admin')
 
                             <li class="menu-title">{{ __('Settings') }}</li>
+
+                            @can('view-hospital')
+                                <li class="menu-item">
+                                    <a href="#menuHospitals" data-bs-toggle="collapse" class="menu-link">
+                                        <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                        <span class="menu-text"> {{ __('Hospitals')  }}</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <div class="collapse" id="menuHospitals">
+                                        <ul class="sub-menu">
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.hospitals.index') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Hospitals') }}</span>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.hospitals.create') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Add Hospital') }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endcan
+
 
                             @can('view-treatments')
                                 <li class="menu-item">
@@ -174,6 +196,30 @@
                                             <li class="menu-item">
                                                 <a href="{{ route('admin.status.create') }}" class="menu-link">
                                                     <span class="menu-text">{{ __('Add Status') }}</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            @endcan
+
+                            @can('view-medical-forms')
+                                <li class="menu-item">
+                                    <a href="#menuMedicalForms" data-bs-toggle="collapse" class="menu-link">
+                                        <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                        <span class="menu-text"> {{ __('Medical Forms')  }}</span>
+                                        <span class="menu-arrow"></span>
+                                    </a>
+                                    <div class="collapse" id="menuMedicalForms">
+                                        <ul class="sub-menu">
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.medical-forms.index') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Medical Forms') }}</span>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.medical-forms.create') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Add Medical Form') }}</span>
                                                 </a>
                                             </li>
                                         </ul>
@@ -270,65 +316,20 @@
 
                             <!-- Topbar Brand Logo -->
                             <div class="logo-box">
-                                <!-- Brand Logo Light -->
-                                <a href="index.html" class="logo-light">
+                                <a href="{{ url('/') }}" class="logo-light">
                                     <img src="assets/images/logo-light.png" alt="logo" class="logo-lg">
                                     <img src="assets/images/logo-sm.png" alt="small logo" class="logo-sm">
                                 </a>
 
-                                <!-- Brand Logo Dark -->
-                                <a href="index.html" class="logo-dark">
+                                <a href="{{ url('/') }}" class="logo-dark">
                                     <img src="assets/images/logo-dark.png" alt="dark logo" class="logo-lg">
                                     <img src="assets/images/logo-sm.png" alt="small logo" class="logo-sm">
                                 </a>
                             </div>
 
-                            <!-- Sidebar Menu Toggle Button -->
                             <button class="button-toggle-menu">
                                 <i class="mdi mdi-menu"></i>
                             </button>
-
-                            <!-- Dropdown Menu -->
-                            <div class="dropdown d-none d-xl-block">
-                                <a class="nav-link dropdown-toggle waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                                    Create New
-                                    <i class="mdi mdi-chevron-down ms-1"></i>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <!-- item-->
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="fe-briefcase me-1"></i>
-                                        <span>New Projects</span>
-                                    </a>
-
-                                    <!-- item-->
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="fe-user me-1"></i>
-                                        <span>Create Users</span>
-                                    </a>
-
-                                    <!-- item-->
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="fe-bar-chart-line- me-1"></i>
-                                        <span>Revenue Report</span>
-                                    </a>
-
-                                    <!-- item-->
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="fe-settings me-1"></i>
-                                        <span>Settings</span>
-                                    </a>
-
-                                    <div class="dropdown-divider"></div>
-
-                                    <!-- item-->
-                                    <a href="javascript:void(0);" class="dropdown-item">
-                                        <i class="fe-headphones me-1"></i>
-                                        <span>Help & Support</span>
-                                    </a>
-
-                                </div>
-                            </div>
                         </div>
 
                         <ul class="topbar-menu d-flex align-items-center">
@@ -421,14 +422,10 @@
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-md-6">
-                                <div><script>document.write(new Date().getFullYear())</script> © Süleyman DENİZHAN </div>
+                                <div><script>document.write(new Date().getFullYear())</script> © BookingSurgery by Global Health Services </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="d-none d-md-flex gap-4 align-item-center justify-content-md-end footer-links">
-                                    <a href="javascript: void(0);">About</a>
-                                    <a href="javascript: void(0);">Support</a>
-                                    <a href="javascript: void(0);">Contact Us</a>
-                                </div>
+
                             </div>
                         </div>
                     </div>

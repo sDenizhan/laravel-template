@@ -31,32 +31,28 @@
                 <table id="basic-datatable" class="table dt-responsive nowrap w-100">
                     <thead>
                         <tr>
+                            <th>{{ __('Actions') }}</th>
                             <th>{{ __('ID') }}</th>
                             <th>{{ __('Name Surname') }}</th>
+                            <th>{{ __('Coordinator') }}</th>
+                            <th>{{ __('Registration Date') }}</th>
                             <th>{{ __('Treatment') }}</th>
                             <th>{{ __('Country') }}</th>
-                            <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($inquiries as $inquiry)
                             <tr>
+                                <td>
+                                    <a href="{{ route('admin.inquiries.edit', $inquiry->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                    <a href="{{ route('admin.inquiries.show', $inquiry->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> </a>
+                                </td>
                                 <td>{{ $inquiry->id }}</td>
                                 <td>{{ $inquiry->name.' '. $inquiry->surname }}</td>
-                                <td>{{ $inquiry->surname }}</td>
-                                <td>
-
-                                    @can('delete-permission')
-                                        <form action="{{ route('admin.inquiries.destroy', $inquiry->id) }}" method="post">
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <a href="{{ route('admin.inquiries.edit', $inquiry->id) }}" class="btn btn-sm btn-primary">Edit</a>
-
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
-                                    @endcan
-                                </td>
+                                <td>{{ $inquiry->assigment_to ?? $inquiry->coordinator->name ?? '-' }}</td>
+                                <td>{{ $inquiry->created_at->format('d/m/Y H:i:s') }}</td>
+                                <td>{{ $inquiry->treatment->name }}</td>
+                                <td>{{ $inquiry->country }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -72,7 +68,8 @@
  <link href="{{ asset('themes/backend/default/assets/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
  <link href="{{ asset('themes/backend/default/assets/libs/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
  <link href="{{ asset('themes/backend/default/assets/libs/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
- <link href="{{ asset('themes/backend/default/assets/libs/datatables.net-select-bs5/css//select.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
+ <link href="{{ asset('themes/backend/default/assets/libs/datatables.net-select-bs5/css/select.bootstrap5.min.css') }}" rel="stylesheet" type="text/css" />
+ <link href="{{ asset('themes/backend/default/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
  <!-- third party css end -->
 @endpush
 
@@ -95,4 +92,5 @@
 
     <!-- Datatables init -->
     <script src=" {{ asset('themes/backend/default/assets/js/pages/datatables.init.js') }}"></script>
+    <script src="{{ asset('themes/backend/default/assets/js/pages/fontawesome.init.js') }}"></script>
 @endpush

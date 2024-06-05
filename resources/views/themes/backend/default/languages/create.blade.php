@@ -4,8 +4,8 @@
     @php
         $data = [
             [
-                'title' => __('Permissions'),
-                'url' => route('admin.permissions.index')
+                'title' => __('Languages'),
+                'url' => route('admin.languages.index')
             ],
             [
                 'title' => __('Add New'),
@@ -13,29 +13,44 @@
             ]
         ];
     @endphp
-    <x-backend.breadcrumbs title="{{ __('Add New Permission') }}" :links="$data" />
+    <x-backend.breadcrumbs title="{{ __('Add New Language') }}" :links="$data" />
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <form action="{{ route('admin.permissions.store') }}" method="POST">
+            <form action="{{ route('admin.languages.store') }}" method="POST">
                 @csrf
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">{{ __('Name') }}</label>
-                        <input type="text" name="name" id="name" class="form-control" placeholder="{{ __('Name') }}" value="{{ old('name') }}">
-                        @error('name')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="mb-3">
-                        <label for="guard_name" class="form-label">{{ __('Guard') }}</label>
-                        <input type="text" name="guard_name" id="guard_name" class="form-control" placeholder="{{ __('Guard') }}" value="{{ old('guard_name') }}">
-                        @error('guard_name')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">{{ __('Name') }}</label>
+                                <input type="text" name="name" id="name" class="form-control" placeholder="{{ __('Name') }}" value="{{ old('name') }}">
+                                @error('name')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">{{ __('Short Code') }}</label>
+                                <input type="text" name="code" id="code" class="form-control" placeholder="{{ __('Short Code') }}" value="{{ old('code') }}">
+                                @error('code')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label for="sort" class="form-label">{{ __('Sort') }}</label>
+                                <input type="number" name="sort" id="sort" class="form-control" placeholder="{{ __('Sort') }}" value="{{ old('sort') }}">
+                                @error('sort')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">

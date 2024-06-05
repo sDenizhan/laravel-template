@@ -9,8 +9,8 @@ enum Status: int
     public function name(): string
     {
         return match ($this) {
-            self::Passive => 'Pasif',
-            self::Active => 'Aktif',
+            self::Passive => 'Inactive',
+            self::Active => 'Active',
         };
     }
 

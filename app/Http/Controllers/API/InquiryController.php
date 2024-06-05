@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\StatusWaitingInquiry;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\StoreInquiryRequest;
-use App\Models\Enquiry;
+use App\Models\Inquiry;
 use App\Models\Status;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,6 @@ class InquiryController extends Controller
     {
         $validated = \Validator::make($request->all(), [
             'treatment_id' => 'required|integer',
-            'status' => 'nullable',
             'gender' => 'required|integer',
             'name' => 'required|string',
             'surname' => 'required|string',
@@ -35,12 +35,12 @@ class InquiryController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Başvurunuz Kayıt Edilemedi!' ], 200);
         }
 
-        $status = Status::where(['section' => 'waiting_inquiry'])->first();
-        $validated->status = $status->id;
+        $store = Inquiry::create($validated->validated());
 
-        Enquiry::create($request->all());
-
-        return response()->json(['status' => 'success', 'message' => 'Başvurunuz Kayıt Edildi..!'], 200);
-
+        if ( $store ) {
+            return response()->json(['status' => 'success', 'message' => 'Başvurunuz Kayıt Edildi..!'], 200);
+        } else {
+            return response()->json(['status' => 'error', 'message' => 'Başvurunuz Kayıt Edilemedi!' ], 200);
+        }
     }
 }

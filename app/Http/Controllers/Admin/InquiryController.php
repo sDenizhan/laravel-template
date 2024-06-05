@@ -3,16 +3,39 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inquiry;
+use App\Models\Status;
 use Illuminate\Http\Request;
 
 class InquiryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+//        $this->middleware('permission:create-permission|edit-permission|delete-permission', ['only' => ['index','show']]);
+//        $this->middleware('permission:create-permission', ['only' => ['create','store']]);
+//        $this->middleware('permission:edit-permission', ['only' => ['edit','update']]);
+//        $this->middleware('permission:delete-permission', ['only' => ['destroy']]);
+    }
+
+    public function waiting()
+    {
+        $inquiries = Inquiry::where(['status' => 0])->get();
+        return view('inquiry.waiting', compact('inquiries'));
+    }
+
+    public function approved()
+    {
+
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $inquiries = Inquiry::all();
+        return view('inquiry.waiting', compact('inquiries'));
     }
 
     /**
@@ -20,7 +43,7 @@ class InquiryController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
