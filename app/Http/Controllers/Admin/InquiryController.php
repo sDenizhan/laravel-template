@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inquiry;
+use App\Models\Language;
 use App\Models\Status;
+use App\Models\Treatments;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class InquiryController extends Controller
@@ -34,6 +37,8 @@ class InquiryController extends Controller
      */
     public function index()
     {
+        dd(\App\Enums\Gender::toArray());
+
         $inquiries = Inquiry::all();
         return view('inquiry.waiting', compact('inquiries'));
     }
@@ -59,7 +64,15 @@ class InquiryController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $inquiry = Inquiry::find($id);
+        $coordinators = User::whereHas('roles', function ($query) {
+            $query->where('name', 'coordinator');
+        })->get();
+        $treatments = Treatments::all();
+        $languages = Language::all();
+
+        $html = view('components.backend.inquiries.modal.edit-form', compact('inquiry', 'coordinators', 'treatments', 'languages'))->render();
+        return response()->json(['status' => 'success', 'html' => $html]);
     }
 
     /**

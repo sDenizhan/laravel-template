@@ -10,6 +10,8 @@ use App\Models\Language;
 use App\Models\MedicalForm;
 use App\Models\Treatments;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use JetBrains\PhpStorm\NoReturn;
 
 class MedicalFormController extends Controller
 {
@@ -100,6 +102,56 @@ class MedicalFormController extends Controller
             $xml->asXML(public_path('exports/medical-form-' . $id . '.xml'));
             return response()->download(public_path('exports/medical-form-' . $id . '.xml'));
         }
+    }
+
+    public function import()
+    {
+        return view('medical-forms.import');
+    }
+
+    #[NoReturn] public function importStore()
+    {
+        $validated = \Validator::make(request()->all(), [
+            'file' => 'required|mimes:xml'
+        ]);
+
+        if ( $validated->fails() ) {
+            return redirect()->back()->withErrors($validated->errors());
+        }
+
+        $uploaded = request()->file('file')->storeAs('imports', request()->file('file')->getClientOriginalName(), 'public');
+
+        $xml = simplexml_load_file(Storage::disk('public')->path($uploaded));
+
+        $medicalForm = MedicalForm::create([
+            'title' => $xml->title.'-imported',
+            'description' => $xml->description,
+            'treatment_id' => $xml->treatment_id,
+            'language_id' => $xml->language_id,
+            'settings' => $xml->settings
+        ]);
+
+        foreach ($xml->questions->question as $question) {
+            $theQuestion = $medicalForm->questions()->create([
+                'medical_form_id' => $medicalForm->id,
+                'question' => $question->question,
+                'description' => $question->description,
+                'type' => $question->type,
+                'order' => $question->order,
+                'rules' => $question->rules
+            ]);
+
+            foreach ($question->answers->answer as $answer) {
+                $theQuestion->answers()->create([
+                    'medical_form_question_id' => $theQuestion->id,
+                    'medical_form_id' => $medicalForm->id,
+                    'answer' => $answer->answer,
+                    'order' => $answer->order
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.medical-forms.index')->with('success', 'Medical Form imported successfully');
     }
 
     /**

@@ -43,6 +43,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     //inquaries
     Route::get('/inquiries/waiting', [InquiryController::class, 'waiting'])->name('inquiries.waiting');
     Route::get('/inquiries/approved', [InquiryController::class, 'approved'])->name('inquiries.approved');
+    Route::post('/inquiries/show', [InquiryController::class, 'show'])->name('inquiries.show');
+    Route::get('/inquiries/rejected/{inquiryId}', [InquiryController::class, 'rejected'])->name('inquiries.rejected');
 
     //medical-forms-questions
     Route::get('/medical-form-questions/add-question/{formId}', [MedicalFormQuestionController::class, 'addQuestion'])->name('medical-form-questions.add-question');
@@ -50,6 +52,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/medical-form-questions/store', [MedicalFormQuestionController::class, 'store'])->name('medical-form-questions.store');
     Route::post('/medical-form-questions/answerStore', [MedicalFormQuestionController::class, 'answerStore'])->name('medical-form-questions.answerStore');
     Route::get('/medical-forms/import', [MedicalFormController::class, 'import'])->name('medical-forms.import');
+    Route::post('/medical-forms/import', [MedicalFormController::class, 'importStore'])->name('medical-forms.importStore');
     Route::get('/medical-forms/export/{formId}', [MedicalFormController::class, 'export'])->name('medical-forms.export');
 
     Route::resources([

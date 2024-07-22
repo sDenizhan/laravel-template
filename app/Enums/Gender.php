@@ -15,4 +15,9 @@ enum Gender: int
             self::Female => 'Female'
         };
     }
+
+    public static function toArray(): array
+    {
+        return collect(self::cases())->mapWithKeys(fn($value, $key) => [$key => $value->name()])->toArray();
+    }
 }

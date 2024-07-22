@@ -44,8 +44,9 @@
                         @foreach ($inquiries as $inquiry)
                             <tr>
                                 <td>
-                                    <a href="{{ route('admin.inquiries.edit', $inquiry->id) }}" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                                    <a href="{{ route('admin.inquiries.update', $inquiry->id) }}" class="btn btn-sm btn-primary show_inquiry" data-id="{{ $inquiry->id }}"><i class="fas fa-edit"></i></a>
                                     <a href="{{ route('admin.inquiries.show', $inquiry->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> </a>
+                                    <a href="{{ route('admin.inquiries.rejected', ['inquiryId' => $inquiry->id]) }}" class="btn btn-sm btn-danger cancellation"><i class="fas fa-trash"></i></a>
                                 </td>
                                 <td>{{ $inquiry->id }}</td>
                                 <td>{{ $inquiry->name.' '. $inquiry->surname }}</td>
@@ -58,6 +59,29 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="inquiryModal" tabindex="-1" role="dialog" aria-labelledby="inquiryModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="inquiryModalTitle">Inquiry Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="#" id="inquiryModalForm">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -93,4 +117,31 @@
     <!-- Datatables init -->
     <script src=" {{ asset('themes/backend/default/assets/js/pages/datatables.init.js') }}"></script>
     <script src="{{ asset('themes/backend/default/assets/js/pages/fontawesome.init.js') }}"></script>
+
+    <script>
+        $(document).ready(function(){
+            $(document).on('click', '.show_inquiry', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var url = $(this).attr('href');
+
+                $('h4.modal-title').text('Inquiry Details');
+
+                $.get(url, {id: id}, function(response) {
+                    $('#inquiryModal .modal-body').html(response.html);
+                    $('#inquiryModal').modal('show');
+                });
+            });
+
+            //cancellation
+            $(document).on('click', '.cancellation', function(e) {
+                e.preventDefault();
+                $('h4.modal-title').text('Reason For Cancellation');
+                var html = '<div class="form-group"><label for="reason" class="form-label">Reason For Cancellation</label><textarea class="form-control" name="cancel" id="cancel" rows="3"></textarea></div>';
+
+                $('#inquiryModal .modal-body').html(html);
+                $('#inquiryModal').modal('show');
+            });
+        });
+    </script>
 @endpush
