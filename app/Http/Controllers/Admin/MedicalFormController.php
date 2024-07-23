@@ -159,7 +159,8 @@ class MedicalFormController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $form = MedicalForm::find($id);
+        return view('medical-forms.show', compact('form'));
     }
 
     /**

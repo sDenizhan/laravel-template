@@ -54,6 +54,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/medical-forms/import', [MedicalFormController::class, 'import'])->name('medical-forms.import');
     Route::post('/medical-forms/import', [MedicalFormController::class, 'importStore'])->name('medical-forms.importStore');
     Route::get('/medical-forms/export/{formId}', [MedicalFormController::class, 'export'])->name('medical-forms.export');
+    Route::get('/medical-forms/show/{formId}', [MedicalFormController::class, 'show'])->name('medical-forms.show');
+
+
 
     Route::resources([
         'roles' => RoleController::class,
