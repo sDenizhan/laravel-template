@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\MedicalFormController;
 use App\Http\Controllers\Admin\MedicalFormQuestionController;
+use App\Http\Controllers\Admin\MessageTemplateController;
 use App\Http\Controllers\Admin\StatusController;
 use App\Http\Controllers\Admin\TreatmentController;
 use Illuminate\Support\Facades\Auth;
@@ -57,7 +58,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/medical-forms/show/{formId}', [MedicalFormController::class, 'show'])->name('medical-forms.show');
 
 
-
     Route::resources([
         'roles' => RoleController::class,
         'users' => UserController::class,
@@ -70,5 +70,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         'medical-forms' => MedicalFormController::class,
         'medical-form-questions' => MedicalFormQuestionController::class,
         'languages' => LanguageController::class,
+        'message-template' => MessageTemplateController::class,
     ]);
 });

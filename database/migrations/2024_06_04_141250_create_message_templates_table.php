@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('message_templates', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('treatment_id')->unsigned();
             $table->bigInteger('language_id')->unsigned();
-            $table->string('name');
+            $table->text('type');
+            $table->string('title');
+            $table->json('message');
             $table->timestamps();
             $table->softDeletes();
 

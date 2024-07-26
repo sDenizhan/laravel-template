@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inquiries', function (Blueprint $table) {
-            $table->text('cancel_reason')->nullable()->after('extra_data');
+            $table->text('language_id')->nullable()->after('treatment_id');
+            $table->text('cancel_reason')->nullable()->after('extra_data1');
         });
     }
 
@@ -22,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('inquiries', function (Blueprint $table) {
-            $table->dropColumn('cancel_reason');
+            $table->dropColumn(['language_id', 'cancel_reason']);
         });
     }
 };

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Language;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,7 +19,9 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             TreatmentSeeder::class,
             HospitalSeeder::class,
-            DoctorSeeder::class
+            DoctorSeeder::class,
+            LanguageSeeder::class,
+            InqurySeeder::class
         ]);
     }
 }

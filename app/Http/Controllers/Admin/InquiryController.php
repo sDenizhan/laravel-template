@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\StatusWaitingInquiry;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InquiryStoreRequest;
 use App\Models\Inquiry;
 use App\Models\Language;
-use App\Models\Status;
 use App\Models\Treatments;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -37,8 +38,6 @@ class InquiryController extends Controller
      */
     public function index()
     {
-        dd(\App\Enums\Gender::toArray());
-
         $inquiries = Inquiry::all();
         return view('inquiry.waiting', compact('inquiries'));
     }
@@ -54,9 +53,29 @@ class InquiryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(InquiryStoreRequest $request)
     {
         //
+        $validated = $request->validated();
+        $inquiry = Inquiry::find($validated['id']);
+
+        $inquiry->update([
+            'name' => $validated['name'],
+            'surname' => $validated['surname'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'country' => $validated['country'],
+            'ip_address' => request()->ip(),
+            'treatment_id' => $validated['treatment_id'],
+            'language_id' => $validated['language_id'],
+            'assignment_to' => $validated['coordinator_id'],
+            'assignment_by' => auth()->id(),
+            'assignment_at' => date('Y-m-d H:i:s'),
+            'message' => $validated['message'],
+            'status' => StatusWaitingInquiry::APPROVED->value
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Inquiry updated successfully']);
     }
 
     /**

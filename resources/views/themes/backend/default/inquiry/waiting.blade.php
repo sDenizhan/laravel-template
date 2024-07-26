@@ -71,15 +71,15 @@
                 <h4 class="modal-title" id="inquiryModalTitle">Inquiry Details</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" action="#" id="inquiryModalForm">
+            <form method="post" action="{{ route('admin.inquiries.store') }}" id="inquiryModalForm">
                 @csrf
-                @method('PUT')
+                @method('POST')
                 <div class="modal-body">
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
+                    <button type="submit" class="btn btn-primary save_inquiry">Save changes</button>
                 </div>
             </form>
         </div>
@@ -141,6 +141,22 @@
 
                 $('#inquiryModal .modal-body').html(html);
                 $('#inquiryModal').modal('show');
+            });
+
+            //save
+            $(document).on('click', '.save_inquiry', function(e) {
+                e.preventDefault();
+                var form = $('#inquiryModalForm');
+                var url = form.attr('action');
+                var data = form.serialize();
+
+                $.post(url, data, function(response) {
+                    if (response.status == 'success') {
+                        $('#inquiryModal').find('div.modal-body > div.row').after('<div class="row"><div class="alert alert-success"><p>'+ response.message +'</p></div></div>')
+                    } else {
+                        $('#inquiryModal').find('div.modal-body').append('div.alert.alert-danger').empty().html('<p>' + response.message + '</p>');
+                    }
+                });
             });
         });
     </script>

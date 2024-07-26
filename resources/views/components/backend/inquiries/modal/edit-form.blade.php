@@ -13,7 +13,7 @@
             @php($genders = \App\Enums\Gender::toArray())
             <select class="form-control" id="gender" name="gender">
                 @foreach($genders as $key => $gender)
-                    <option value="{{ $key }}">{{ $gender }}</option>
+                    <option value="{{ $key }}" {{ $key == $inquiry->gender ? 'selected' : ''}}>{{ $gender }}</option>
                 @endforeach
             </select>
         </div>
@@ -71,4 +71,6 @@
             </div>
         </div>
     </div>
+
+    <input type="hidden" name="id" value="{{ $inquiry->id }}"  />
 </div>

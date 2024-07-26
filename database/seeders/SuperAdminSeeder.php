@@ -77,5 +77,24 @@ class SuperAdminSeeder extends Seeder
             $anaesthetist = User::create($anaesthetist);
             $anaesthetist->assignRole('Anaesthetist');
         }
+
+        // Creating Coordinator
+        $coordinators = [
+            [
+                'name' => 'Koordinator 1',
+                'email' => 'koordinator@bookings.com',
+                'password' => Hash::make('koordinator1234')
+            ],
+            [
+                'name' => 'Koordinator 2',
+                'email' => 'koordinator2@bookgins.com',
+                'password' => Hash::make('koordinator21234')
+            ],
+        ];
+
+        foreach ($coordinators as $coordinator) {
+            $coordinator = User::create($coordinator);
+            $coordinator->assignRole('Coordinator');
+        }
     }
 }
