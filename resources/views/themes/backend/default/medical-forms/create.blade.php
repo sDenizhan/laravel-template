@@ -20,7 +20,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <form action="{{ route('admin.medical-forms.store') }}" method="POST">
+            <form action="{{ route('admin.medical-forms.store') }}" method="POST" id="create">
                 @csrf
                 @method('POST')
                 <div class="card-body">
@@ -86,8 +86,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mb-3 row step_row">
+                        <div class="col-lg-2">
+                            <label for="steps" class="form-label">{{ __('Step Number') }}</label>
+                            <input type="number" name="step_no[]" id="step_no" class="form-control" value="1" step="1" />
+                        </div>
+
+                        <div class="col-lg-8">
+                            <label for="steps" class="form-label">{{ __('Step Title') }}</label>
+                            <input type="text" id="step_title" name="step_title[]" class="form-control" value="" />
+                        </div>
+
+                        <div class="col-lg-2">
+                            <button type="button" id="new" class="btn btn-primary mt-3 add"><i class="fas fa-plus"></i></button>
+                            <button type="button" id="new" class="btn btn-secondary mt-3 remove"><i class="fas fa-minus"></i></button>
+                        </div>
+                    </div>
+
                     <div class="mb-3">
-                        <button type="submit" class="btn btn-sm btn-primary">{{ __('Save') }}</button>
+                        <button type="submit" class="btn btn-sm btn-primary save">{{ __('Save') }}</button>
                     </div>
                 </div>
             </form>
@@ -95,3 +112,25 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function (){
+
+            $(document).on('click', 'button.add', function (e){
+                e.preventDefault();
+                let clonedStep = $('.step_row:first').clone().addClass('step_cloned');
+                clonedStep.find('input:first').val($('.step_row').length + 1);
+                clonedStep.insertAfter('.step_row:last');
+            });
+
+            $(document).on('click', 'button.remove', function (e){
+                e.preventDefault();
+                if($('.step_cloned').length > 0){
+                    $('.step_cloned:last').remove();
+                }
+            });
+
+        });
+    </script>
+@endpush

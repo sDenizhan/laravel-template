@@ -46,7 +46,7 @@
                             <input type="text" class="form-control" id="question" name="question" required>
                         </div>
                         <div class="row col-12">
-                            <div class="mb-3 col-4">
+                            <div class="mb-3 col-3">
                                 <label for="type" class="form-label">{{ __('Type') }}</label>
                                 <select class="form-select" id="type" name="type" required>
                                     <option value="text">{{ __('Text') }}</option>
@@ -57,16 +57,20 @@
                                     <option value="multiselect">{{ __('Multi Select') }}</option>
                                 </select>
                             </div>
-                            <div class="mb-3 col-4">
+                            <div class="mb-3 col-3">
                                 <label for="required" class="form-label">{{ __('Required') }}</label>
                                 <select class="form-select" id="isRequired" name="rules[isRequired]" required>
                                     <option value="yes">{{ __('Yes') }}</option>
                                     <option value="no">{{ __('No') }}</option>
                                 </select>
                             </div>
-                            <div class="mb-3 col-4">
+                            <div class="mb-3 col-3">
                                 <label for="order" class="form-label">{{ __('Order') }}</label>
                                 <input type="number" id="order" name="order" class="form-control" value="1" step="1" />
+                            </div>
+                            <div class="mb-3 col-3">
+                                <label for="step" class="form-label">{{ __('Step') }}</label>
+                                <input type="number" id="step" name="step" class="form-control" value="1" step="1" />
                             </div>
                         </div>
                         <input type="hidden" name="medical_form_id" value="{{ $form->id }}" />
@@ -80,7 +84,7 @@
 
     <div class="row">
         <div class="col-xl-12" id="questionsList">
-            <x-backend.medical-forms.list-questions-and-answers :questions="$questions" />
+            <x-backend.medical-forms.list-questions-and-answers :questions="$questions" :steps="$form->steps" />
         </div>
     </div>
 

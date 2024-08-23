@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMedicalFormQuestionRequest;
 use App\Models\MedicalForm;
+use App\Models\MedicalFormQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,7 +20,9 @@ class MedicalFormQuestionController extends Controller
 
         $questions = $form->questions()->get();
 
-        return view('medical-forms.add-question', compact('form', 'questions'));
+        $maxStep = collect($questions)->max('step');
+
+        return view('medical-forms.add-question', compact('form', 'questions', 'maxStep'));
     }
 
     public function getMedicalFormQuestions(?int $formId = null)
@@ -40,13 +43,13 @@ class MedicalFormQuestionController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'No questions found',
-                'html' => view('components.backend.medical-forms.list-questions-and-answers', ['questions' => []])->render()
+                'html' => view('components.backend.medical-forms.list-questions-and-answers', ['steps' => $form->steps, 'questions' => []])->render()
             ], 200);
         } else {
             return response()->json([
                 'status' => 'success',
                 'questions' => $questions,
-                'html' => view('components.backend.medical-forms.list-questions-and-answers', ['questions' => $questions])->render()
+                'html' => view('components.backend.medical-forms.list-questions-and-answers', ['steps' => $form->steps, 'questions' => $questions])->render()
             ], 200);
         }
     }
@@ -95,6 +98,7 @@ class MedicalFormQuestionController extends Controller
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'medical_form_id' => 'required|integer',
             'question' => 'required|string',
@@ -102,6 +106,7 @@ class MedicalFormQuestionController extends Controller
             'type' => 'required|string',
             'rules' => 'nullable|array',
             'order' => 'required|integer',
+            'step' => 'required|integer'
         ]);
 
         if ( $validator->fails() ) {
@@ -123,6 +128,22 @@ class MedicalFormQuestionController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to add question'
             ], 200);
+        }
+    }
+
+    public function destroy(string $questionId)
+    {
+        $question = MedicalFormQuestion::find($questionId);
+        if ( $question->delete() ){
+            return  response()->json([
+                'status' => 'success',
+                'message' => __('Question Deleted!')
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Question Not Deleted!')
+            ]);
         }
     }
 }

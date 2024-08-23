@@ -12,4 +12,15 @@ class MessageTemplate extends Model
     protected $casts = [
         'message' => 'array',
     ];
+
+
+    public function treatment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Treatments::class);
+    }
+
+    public function language(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Language::class);
+    }
 }

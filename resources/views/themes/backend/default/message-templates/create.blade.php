@@ -25,7 +25,7 @@
                     @method('POST')
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-4">
+                            <div class="col-12">
                                 <div class="mb-3">
                                     <label for="name" class="form-label">{{ __('Title') }}</label>
                                     <input type="text" name="title" id="title" class="form-control" placeholder="{{ __('Title') }}" value="{{ old('title') }}">
@@ -34,7 +34,7 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <div class="mb-3">
                                     <label for="type" class="form-label">{{ __('Treatment') }}</label>
                                     <select name="treatment_id" id="treatment_id" class="form-control">
@@ -50,7 +50,20 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-3">
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">{{ __('Languages') }}</label>
+                                    <select name="language_id" id="language_id" class="form-control">
+                                        <option value="">{{ __('Select Language') }}</option>
+                                        @if(!is_null($languages))
+                                            @foreach($languages as $language)
+                                                <option value="{{ $language->id }}">{{ $language->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
                                 <div class="mb-3">
                                     <label for="type" class="form-label">{{ __('Type') }}</label>
                                     <select name="type" id="type" class="form-control">
@@ -59,27 +72,25 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        @if(!is_null($languages))
-                            <div class="row mb-3">
-                                <div class="col-sm-10">
-                                    <div class="tab-content pt-0">
-                                        @foreach($languages as $language)
-                                            <h5 @class(['mt-3' => !$loop->first])>{{ $language->name }}</h5>
-                                            <div @class(['editor']) id="{{ $language->code }}" style="max-height: 400px">
-                                                <p>Cillum ad ut irure tempor velit nostrud occaecat ullamco aliqua anim Lorem sint. Veniam sint duis incididunt
-                                                    do esse magna mollit excepteur laborum qui. Id id reprehenderit sit est eu aliqua occaecat quis et velit
-                                                    excepteur laborum mollit dolore eiusmod. Ipsum dolor in occaecat commodo et voluptate minim reprehenderit
-                                                    mollit pariatur. Deserunt non laborum enim et cillum eu deserunt excepteur ea incididunt minim occaecat.</p>
-                                            </div>
-                                            <input type="hidden" name="content[{{ $language->code }}]" value="">
-                                        @endforeach
-                                    </div>
+                            <div class="col-3">
+                                <div class="mb-3">
+                                    <label for="action" class="form-label">{{ __('Action') }}</label>
+                                    <select name="action" id="action" class="form-control">
+                                        <option value="medical_form">{{ __('Medical Form') }}</option>
+                                    </select>
                                 </div>
-                            </div> <!-- end row-->
-                        @endif
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-lg-12">
+                                <h5 class="">{{ __('Content:') }}</h5>
+                                <div class="editor" id="editor" style="min-height: 400px">
+
+                                </div>
+                            </div>
+                        </div> <!-- end row-->
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer mt-3">
                         <button type="submit" class="btn btn-sm btn-primary">{{ __('Save') }}</button>
                     </div>
                 </form>
@@ -97,27 +108,15 @@
 @push('scripts')
     <script src="{{ asset('themes/backend/default/assets/libs/quill/quill.min.js') }}"></script>
     <script>
-
         $(document).ready(function(){
-
-            $(document).find('.editor').each(function (index){
-                let id = $(this).attr('id');
-                var quill = new Quill('#'+id, {
-                    theme: 'snow'
-                });
+            var quill = new Quill('#editor', {
+                theme: 'snow'
             });
 
-            $(document).on('submit', 'form#formTemplate', function (e){
-                e.preventDefault();
-
-                $('.tab-content').find('div.editor').each(function(index){
-                    let id = $(this).attr('id');
-                    let content = $(this).find('.ql-editor').html();
-                    $(this).find('input').val(content);
-                });
-
-                $(this)[0].submit();
-            })
+            $('#formTemplate').submit(function(){
+                var content = quill.root.innerHTML;
+                $('#formTemplate').append('<input type="hidden" name="content" value="'+content+'" />');
+            });
         });
     </script>
 @endpush

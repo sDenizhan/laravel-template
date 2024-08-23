@@ -27,6 +27,8 @@ class StoreMedicalFormRequest extends FormRequest
             'title' => 'required|string',
             'description' => 'nullable|string',
             'settings' => 'nullable|array',
+            'step_no' => 'nullable|array',
+            'step_title' => 'nullable|array'
         ];
     }
 }

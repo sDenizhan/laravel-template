@@ -24,11 +24,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+
         Model::unguard();
 
         $themeName = Config::get('view.theme', 'default');
         Config::push('view.paths', resource_path(Arr::join(['views', 'themes', 'backend', $themeName], DIRECTORY_SEPARATOR)));
+        Config::push('view.paths', resource_path(Arr::join(['views', 'themes', 'frontend', $themeName], DIRECTORY_SEPARATOR)));
 
         //livewire path set ediliyor
         //Config::set('livewire.view_path', Str::replace('{theme}', $themeName, Config::get('livewire.view_path')));

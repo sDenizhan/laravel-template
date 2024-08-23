@@ -20,8 +20,6 @@ class Inquiry extends Model
 
     public function coordinator(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigment_to', 'id');
+        return $this->belongsTo(User::class, 'assignment_to', 'id');
     }
-
-
 }

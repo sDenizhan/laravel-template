@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Enums\StatusWaitingInquiry;
+use App\Enums\InquiryStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\StoreInquiryRequest;
 use App\Models\Inquiry;
@@ -11,6 +11,30 @@ use Illuminate\Http\Request;
 
 class InquiryController extends Controller
 {
+    public function waiting()
+    {
+        $inquiries = Inquiry::where('status', InquiryStatus::WAITING)->get();
+        $data = [];
+
+        foreach ($inquiries as $inquiry) {
+            $data[] = [
+                'id' => $inquiry->id,
+                'name' => $inquiry->name,
+                'surname' => $inquiry->surname,
+                'email' => $inquiry->email,
+                'phone' => $inquiry->phone,
+                'message' => $inquiry->message,
+                'country' => $inquiry->country,
+                'ip_address' => $inquiry->ip_address,
+                'created_at' => $inquiry->created_at->format('d F Y H:i:s'),
+                'treatment' => $inquiry->treatment->name,
+                'status' => InquiryStatus::from($inquiry->status)->name,
+            ];
+        }
+
+        return response()->json(['status' => 'success', 'message' => '', 'data' => $data]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

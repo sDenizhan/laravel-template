@@ -22,7 +22,7 @@ class MessageTemplateController extends Controller
     public function index()
     {
         return view('message-templates.index', [
-            'messageTemplates' => MessageTemplate::orderBy('id','DESC')->paginate(75)
+            'templates' => MessageTemplate::orderBy('id','DESC')->paginate(75)
         ]);
     }
 
@@ -35,7 +35,29 @@ class MessageTemplateController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
+        $validated = \Validator::make($request->all(), [
+            'title' => 'required',
+            'language_id' => 'required',
+            'treatment_id' => 'required',
+            'type' => 'required',
+            'action' => 'required',
+            'content' => 'required',
+        ]);
+
+        if ( $validated->fails() ) {
+            return redirect()->back()->withErrors($validated)->withInput();
+        }
+
+        MessageTemplate::create([
+            'treatment_id' => $request->treatment_id,
+            'language_id' => $request->language_id,
+            'title' => $request->title,
+            'type' => $request->type.'_'.$request->action,
+            'message' => $request->content,
+        ]);
+
+        return redirect()->route('admin.message-template.index')
+            ->with('success','Message template created successfully.');
     }
 
     public function show($id)

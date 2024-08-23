@@ -45,6 +45,17 @@ class MedicalFormController extends Controller
     public function store(StoreMedicalFormRequest $request)
     {
         $validated  = $request->validated();
+        $step_no = $validated['step_no'];
+        $step_title = $validated['step_title'];
+
+        $validated['steps'] = collect($step_no)->mapWithKeys(function ($value, $key) use ($step_title){
+                                    return [$value => $step_title[$key]];
+                                })->toArray();
+
+        unset($validated['step_no']);
+        unset($validated['step_title']);
+
+
         $medicalForm = MedicalForm::create($validated);
 
         if ($medicalForm) {

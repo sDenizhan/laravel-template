@@ -12,7 +12,13 @@ class MedicalForm extends Model
 
     protected $casts = [
         'settings' => 'array',
+        'steps' => 'array'
     ];
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function treatment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {

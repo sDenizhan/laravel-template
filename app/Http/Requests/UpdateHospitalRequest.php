@@ -11,7 +11,7 @@ class UpdateHospitalRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdateHospitalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string',
+            'address' => 'nullable',
+            'status' => 'required',
+            'doctors' => 'nullable|array',
         ];
     }
 }

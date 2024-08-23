@@ -33,17 +33,17 @@
             <div class="app-menu">
 
                 <!-- Brand Logo -->
-                <div class="logo-box">
+                <div class="logo-box" style="background: #fff !important;">
                     <!-- Brand Logo Light -->
                     <a href="{{ route('admin.dashboard') }}" class="logo-light">
-                        <img src="{{ asset('themes/backend/default/assets/images/logo-light-2.png')}}" alt="logo" class="logo-lg">
-                        <img src="{{ asset('themes/backend/default/assets/images/logo-sm.png')}}" alt="small logo" class="logo-sm">
+                        <img src="{{ asset('assets/logo.png')}}" alt="logo" class="logo-lg" style="min-height: 55px !important;">
+                        <img src="{{ asset('assets/logo.png')}}" alt="small logo" class="logo-sm" style="min-height: 55px !important;">
                     </a>
 
                     <!-- Brand Logo Dark -->
                     <a href="{{ route('admin.dashboard') }}"  class="logo-dark">
-                        <img src="{{ asset('themes/backend/default/assets/images/logo-dark.png') }}" alt="dark logo" class="logo-lg">
-                        <img src="{{ asset('themes/backend/default/assets/images/logo-sm.png')}}" alt="small logo" class="logo-sm">
+                        <img src="{{ asset('assets/logo.png') }}" alt="dark logo" class="logo-lg">
+                        <img src="{{ asset('assets/logo.png')}}" alt="small logo" class="logo-sm">
                     </a>
                 </div>
 
@@ -98,7 +98,7 @@
                             </a>
                         </li>
 
-                        @can('view-inquires')
+                        @hasanyrole('Super Admin|Admin|Coordinator')
 
                             <li class="menu-title">Inquires</li>
 
@@ -110,16 +110,21 @@
                                 </a>
                                 <div class="collapse" id="menuInquires">
                                     <ul class="sub-menu">
+                                        @can('view-waiting-inquiries')
                                         <li class="menu-item">
                                             <a href="{{ route('admin.inquiries.waiting') }}" class="menu-link">
                                                 <span class="menu-text">{{ __('Waiting Inquiries') }}</span>
                                             </a>
                                         </li>
+                                        @endcan
+
+                                        @can('view-approved-inquiries')
                                         <li class="menu-item">
                                             <a href="{{ route('admin.inquiries.approved') }}" class="menu-link">
                                                 <span class="menu-text">{{ __('Approved Inquires') }}</span>
                                             </a>
                                         </li>
+                                        @endcan
                                     </ul>
                                 </div>
                             </li>
