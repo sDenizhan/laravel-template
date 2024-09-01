@@ -28,13 +28,14 @@ use App\Http\Controllers\MedicalFormController as MedicalForm;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('admin.dashboard');
 });
 
 Auth::routes();
 
 Route::get('/medical-forms/show/{formId}', [MedicalForm::class, 'index'])->name('medical-forms.show');
 Route::post('/medical-forms/update', [MedicalForm::class, 'update'])->name('medical-forms.update');
+Route::post('/medical-forms/finishUpdate', [MedicalForm::class, 'finishUpdate'])->name('medical-forms.finishUpdate');
 
 
 Route::prefix('webapi')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
@@ -69,8 +70,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/inquiries/rejected/{inquiryId}', [InquiryController::class, 'rejected'])->name('inquiries.rejected');
     Route::post('/inquiries/statusUpdate', [InquiryController::class, 'statusUpdate'])->name('inquiries.statusUpdate');
 
-    Route::post('/inquiries/send_form_mail', [InquiryController::class, 'sendFormMail'])->name('inquiries.send_form_mail');
-    Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'sendToWhatsapp'])->name('inquiries.send_to_whatsapp');
+    Route::post('/inquiries/send_form_mail', [InquiryController::class, 'sendFormWithMail'])->name('inquiries.send_form_mail');
+    Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'sendFormWithWhatsapp'])->name('inquiries.send_to_whatsapp');
 
     //medical-forms-questions
     Route::get('/medical-form-questions/add-question/{formId}', [MedicalFormQuestionController::class, 'addQuestion'])->name('medical-form-questions.add-question');

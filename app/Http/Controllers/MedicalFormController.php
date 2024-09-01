@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\InquiryStatus;
+use App\Models\Inquiry;
 use App\Models\MedicalForm;
 use App\Models\MedicalFormPatientAnswers;
 use Carbon\Carbon;
@@ -66,5 +68,30 @@ class MedicalFormController extends Controller
         ]);
 
         return response()->json(['status' => 'success', 'message' => __('Medical Form Updated..!')]);
+    }
+
+    public function finishUpdate(Request $request) {
+
+        $validator = \Validator::make($request->all(), [
+            'formId' => 'required',
+            'submit' => 'required',
+        ]);
+
+        if ( $validator->fails() ) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()->first() ]);
+        }
+
+        $validated = $validator->validated();
+
+        if ( $validated['submit'] ) {
+            $inquiryId = MedicalFormPatientAnswers::where(['code' => $validated['formId']])->first()->inquiry_id;
+            $update = Inquiry::where(['id' => $inquiryId])->update(['status' => InquiryStatus::DOCTOR_SENT->value ]);
+
+            return response()->json(['status' => 'success', 'message' => __('Medical Form Updated..!')]);
+        }
+        else
+        {
+            return response()->json(['status' => 'error', 'message' => __('Medical Form Not Updated..!')]);
+        }
     }
 }

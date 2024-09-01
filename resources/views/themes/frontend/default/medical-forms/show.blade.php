@@ -33,6 +33,36 @@
                                     @endforeach
                                 </section>
                             @endforeach
+                            <h3>{{ __('Summary') }}</h3>
+                            <section>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4>{{ __('Summary of the Form') }}</h4>
+                                        <p>{{ __('Please Review the Form Before Submitting') }}</p>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-centered table-nowrap">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{{ __('Question') }}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($form->questions as $question)
+                                                        <tr class="odd">
+                                                            <td>{{ $question->question }}</td>
+                                                        </tr>
+                                                        <tr class="even">
+                                                            <td>{{ $patientAnswers->answers[$question->id] ?? '' }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </form>
                 </div> <!-- end card-body -->
@@ -44,6 +74,12 @@
 
 @push('styles')
     <link href="{{ asset('themes/backend/default/assets/libs/jquery-steps/jquery.steps.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        tr.odd {
+            background-color: #ebebeb;
+            font-weight: bold;
+        }
+    </style>
 @endpush
 
 
@@ -57,9 +93,16 @@
                 headerTag: "h3",
                 bodyTag: "section",
                 transitionEffect: "slideLeft",
+                autoFocus: true,
                 onStepChanged: function (event, currentIndex, priorIndex){
-                    let data = $('form').serialize();
 
+                    if (currentIndex === 3) {
+                        var height = $('div.table-responsive').height();
+
+                        $('div.content').css('min-height', height + 100);
+                    }
+
+                    let data = $('form').serialize();
                     $.post('{{ route('medical-forms.update') }}', data, function (response){
 
                     });
@@ -76,8 +119,27 @@
                         cancelButtonText : '{{ __('No!') }}'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $.post('', {}, function (response){
-
+                            $.post('{{ route('medical-forms.finishUpdate') }}', {
+                                _token : '{{ csrf_token() }}',
+                                _method : 'POST',
+                                formId : $('#formId').val(),
+                                submit : true
+                            } , function (response){
+                                if (response.status === 'success') {
+                                    Swal.fire({
+                                        title : '{{ __('Form Submitted Successfully') }}',
+                                        text : '{{ __('The Form Has Been Submitted Successfully. You can close this page!') }}',
+                                        icon : 'success',
+                                        confirmButtonColor : '#34c38f'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title : '{{ __('Form Submission Failed') }}',
+                                        text : '{{ __('The Form Submission Failed') }}',
+                                        icon : 'error',
+                                        confirmButtonColor : '#f46a6a'
+                                    });
+                                }
                             });
                         }
                     });

@@ -25,10 +25,10 @@ class InquiryController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-//        $this->middleware('permission:create-permission|edit-permission|delete-permission', ['only' => ['index','show']]);
-//        $this->middleware('permission:create-permission', ['only' => ['create','store']]);
-//        $this->middleware('permission:edit-permission', ['only' => ['edit','update']]);
-//        $this->middleware('permission:delete-permission', ['only' => ['destroy']]);
+        $this->middleware('permission:create-inquiry|edit-inquiry|delete-inquiry', ['only' => ['index','show']]);
+        $this->middleware('permission:create-inquiry', ['only' => ['create','store']]);
+        $this->middleware('permission:edit-inquiry', ['only' => ['edit','update']]);
+        $this->middleware('permission:delete-inquiry', ['only' => ['destroy']]);
     }
 
     public function waiting()
@@ -118,7 +118,7 @@ class InquiryController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Inquiry updated successfully']);
     }
 
-    public function sendFormMail(Request $request)
+    public function sendFormWithMail(Request $request)
     {
 
         $validated = \Validator::make($request->all(), [
@@ -154,7 +154,7 @@ class InquiryController extends Controller
         $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{patient_surname}}', $inquiry->surname);
         $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{username}}', $inquiry->email);
         $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{password}}', $newPassword);
-        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{your_medical_form_link}}', url('/medical-form/show/'. $formHash));
+        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{your_medical_form_link}}', route('medical-forms.show', $formHash));
 
         $medicalForm = MedicalForm::where(['treatment_id' => $inquiry->treatment_id, 'language_id' => $inquiry->language_id])->first();
 
@@ -168,7 +168,7 @@ class InquiryController extends Controller
         return response()->json(['status' => 'success', 'html' => $html]);
     }
 
-    public function sendToWhatsapp(Request $request)
+    public function sendFormWithWhatsapp(Request $request)
     {
 
         $validated = \Validator::make($request->all(), [
@@ -191,6 +191,7 @@ class InquiryController extends Controller
 
         //ready form answers
         MedicalFormPatientAnswers::create([
+            'inquiry_id' => $inquiry->id,
             'medical_form_id' => $request->medicalFormId,
             'user_id' => $user->id,
             'code' => $request->formHash,
