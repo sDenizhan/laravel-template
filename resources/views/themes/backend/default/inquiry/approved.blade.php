@@ -53,43 +53,54 @@
                                             </button>
                                             <div class="dropdown-menu">
 
-                                                @hasrole('Super Admin|Coordinator')
-                                                    <a href="#" class="dropdown-item update_status" data-why="not_reached" data-status="{{ \App\Enums\InquiryStatus::NOT_REACHED->value }}" data-id="{{ $inquiry->id }}">
-                                                        <i class="fas fa-phone-slash"></i> {{ __('Not Reachable') }}
-                                                    </a>
+                                                @if ($inquiry->status == \App\Enums\InquiryStatus::APPROVED->value ||
+                                                    $inquiry->status == \App\Enums\InquiryStatus::NOT_REACHED->value ||
+                                                    $inquiry->status == \App\Enums\InquiryStatus::GIVE_UP->value ||
+                                                    $inquiry->status == \App\Enums\InquiryStatus::FORM_SENT->value )
 
-                                                    <a href="#" class="dropdown-item update_status" data-why="give_up" data-status="{{ \App\Enums\InquiryStatus::GIVE_UP->value }}" data-id="{{ $inquiry->id }}">
-                                                        <i class="fas fa-user-slash"></i> {{ __('Patient Has Give Up') }}
-                                                    </a>
+                                                    @hasrole('Super Admin|Coordinator')
+                                                        <a href="#" class="dropdown-item update_status" data-why="not_reached" data-status="{{ \App\Enums\InquiryStatus::NOT_REACHED->value }}" data-id="{{ $inquiry->id }}">
+                                                            <i class="fas fa-phone-slash"></i> {{ __('Not Reachable') }}
+                                                        </a>
 
-                                                    <a href="#" class="dropdown-item send_form_mail" data-id="{{ $inquiry->id }}">
-                                                        <i class="fas fa-mail-bulk"></i> {{ __('Sent Form via Email') }}
-                                                    </a>
+                                                        <a href="#" class="dropdown-item update_status" data-why="give_up" data-status="{{ \App\Enums\InquiryStatus::GIVE_UP->value }}" data-id="{{ $inquiry->id }}">
+                                                            <i class="fas fa-user-slash"></i> {{ __('Patient Has Give Up') }}
+                                                        </a>
 
-                                                    <a href="#" class="dropdown-item send_form_whatsapp" data-id="{{ $inquiry->id }}">
-                                                        <i class="fas fa-sms"></i> {{ __('Sent Form via Whatsapp') }}
-                                                    </a>
-                                                @endrole
+                                                        <a href="#" class="dropdown-item send_form_mail" data-id="{{ $inquiry->id }}">
+                                                            <i class="fas fa-mail-bulk"></i> {{ __('Sent Form via Email') }}
+                                                        </a>
+
+                                                        <a href="#" class="dropdown-item send_form_whatsapp" data-id="{{ $inquiry->id }}">
+                                                            <i class="fas fa-sms"></i> {{ __('Sent Form via Whatsapp') }}
+                                                        </a>
+                                                    @endrole
+
+                                                @endif
+
+                                                @if ($inquiry->status === \App\Enums\InquiryStatus::DOCTOR_SENT->value )
+
+                                                @endif
 
                                                 @can('edit-inquiry')
-                                                <a href="{{ route('admin.inquiries.update', $inquiry->id) }}"
-                                                   class="dropdown-item show_inquiry" data-id="{{ $inquiry->id }}">
-                                                    <i class="fas fa-edit"></i> {{ __('Edit') }}
-                                                </a>
+                                                    <a href="{{ route('admin.inquiries.update', $inquiry->id) }}"
+                                                       class="dropdown-item show_inquiry" data-id="{{ $inquiry->id }}">
+                                                        <i class="fas fa-edit"></i> {{ __('Edit') }}
+                                                    </a>
                                                 @endcan
 
                                                 @can('view-inquiry')
-                                                <a href="{{ route('admin.inquiries.show', $inquiry->id) }}" data-id="{{ $inquiry->id }}"
-                                                   class="dropdown-item show_inquiry">
-                                                    <i class="fas fa-eye"></i> {{ __('View') }}
-                                                </a>
+                                                    <a href="{{ route('admin.inquiries.show', $inquiry->id) }}" data-id="{{ $inquiry->id }}"
+                                                       class="dropdown-item show_inquiry">
+                                                        <i class="fas fa-eye"></i> {{ __('View') }}
+                                                    </a>
                                                 @endcan
 
                                                 @can('delete-inquiry')
-                                                <a href="{{ route('admin.inquiries.rejected', ['inquiryId' => $inquiry->id]) }}"
-                                                   class="dropdown-item cancellation">
-                                                    <i class="fas fa-trash"></i> {{ __('Cancel') }}
-                                                </a>
+                                                    <a href="{{ route('admin.inquiries.rejected', ['inquiryId' => $inquiry->id]) }}"
+                                                       class="dropdown-item cancellation">
+                                                        <i class="fas fa-trash"></i> {{ __('Cancel') }}
+                                                    </a>
                                                 @endcan
 
                                             </div>

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
 use App\Models\Permission;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 
@@ -44,10 +46,26 @@ class PermissionController extends Controller
      */
     public function store(StorePermissionRequest $request)
     {
-        $store = Permission::create([
-            'name'=> $request->name,
-            'guard_name' => $request->guard_name
-        ]);
+        $validated = $request->validated();
+        $permissions = $validated['name'];
+
+        //crud::medical-forms => create, read, update, delete
+        if ( Str::of($permissions)->contains('crud:') ) {
+            $name = Str::of($permissions)->replace('crud:', '');
+            $perms = ['create', 'edit', 'view', 'delete'];
+            $permissions = collect($perms)->map(function($perm) use ($name, $validated) {
+                return [
+                        'name' => Arr::join([$perm, $name], '-'),
+                        'guard_name' => $validated['guard_name']
+                        ];
+            });
+            $store = Permission::insert($permissions->toArray());
+        } else {
+            $store = Permission::create([
+                'name'=> $validated['name'],
+                'guard_name' => $validated['guard_name']
+            ]);
+        }
 
         return redirect()->route('admin.permissions.index')->with('success', __('Permission created successfully'));
     }
@@ -57,7 +75,7 @@ class PermissionController extends Controller
      */
     public function show(string $id)
     {
-        
+
     }
 
     /**

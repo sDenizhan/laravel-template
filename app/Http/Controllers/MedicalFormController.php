@@ -85,7 +85,7 @@ class MedicalFormController extends Controller
 
         if ( $validated['submit'] ) {
             $inquiryId = MedicalFormPatientAnswers::where(['code' => $validated['formId']])->first()->inquiry_id;
-            $update = Inquiry::where(['id' => $inquiryId])->update(['status' => InquiryStatus::DOCTOR_SENT->value ]);
+            $update = Inquiry::where(['id' => $inquiryId])->update(['status' => InquiryStatus::FORM_RECEIVED->value ]);
 
             return response()->json(['status' => 'success', 'message' => __('Medical Form Updated..!')]);
         }

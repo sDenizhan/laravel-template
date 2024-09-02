@@ -55,7 +55,6 @@ class MedicalFormController extends Controller
         unset($validated['step_no']);
         unset($validated['step_title']);
 
-
         $medicalForm = MedicalForm::create($validated);
 
         if ($medicalForm) {
@@ -82,6 +81,13 @@ class MedicalFormController extends Controller
                 $settingsXml->addChild($key, $value);
             }
 
+            $steps = $form->steps;
+            $stepsXml = $xml->addChild('steps');
+            foreach ($steps as $key => $value) {
+                $stepsXml->addChild('step_no', $key);
+                $stepsXml->addChild('step_title', $value);
+            }
+
             $questions = $form->questions;
             $questionsXml = $xml->addChild('questions');
             foreach ($questions as $question) {
@@ -91,6 +97,7 @@ class MedicalFormController extends Controller
                 $questionXml->addChild('description', $question->description);
                 $questionXml->addChild('type', $question->type);
                 $questionXml->addChild('order', $question->order);
+                $questionXml->addChild('step', $question->step);
 
                 $rules = $question->rules;
                 $rulesXml = $questionXml->addChild('rules');
@@ -134,12 +141,17 @@ class MedicalFormController extends Controller
 
         $xml = simplexml_load_file(Storage::disk('public')->path($uploaded));
 
+        $steps = collect($xml->steps->children())->mapWithKeys(function ($step) {
+                    return [$step->step_no => $step->step_title];
+                })->toArray();
+
         $medicalForm = MedicalForm::create([
             'title' => $xml->title.'-imported',
             'description' => $xml->description,
             'treatment_id' => $xml->treatment_id,
             'language_id' => $xml->language_id,
-            'settings' => $xml->settings
+            'settings' => $xml->settings,
+            'steps' => $steps
         ]);
 
         foreach ($xml->questions->question as $question) {
@@ -149,7 +161,8 @@ class MedicalFormController extends Controller
                 'description' => $question->description,
                 'type' => $question->type,
                 'order' => $question->order,
-                'rules' => $question->rules
+                'rules' => $question->rules,
+                'step' => $question->step
             ]);
 
             foreach ($question->answers->answer as $answer) {
@@ -206,6 +219,16 @@ class MedicalFormController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = auth()->user();
+        $user->hasPermissionTo('delete-medical-forms') ?: abort(403);
+
+        $form = MedicalForm::find($id);
+
+        if ($form) {
+            $form->delete();
+            return redirect()->route('admin.medical-forms.index')->with('success', 'Medical Form deleted successfully');
+        } else {
+            return redirect()->route('admin.medical-forms.index')->with('error', 'Medical Form not found');
+        }
     }
 }
