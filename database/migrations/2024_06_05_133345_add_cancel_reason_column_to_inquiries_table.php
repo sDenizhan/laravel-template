@@ -12,8 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inquiries', function (Blueprint $table) {
-            $table->text('language_id')->nullable()->after('treatment_id');
+            $table->bigInteger('language_id')->nullable()->after('treatment_id');
             $table->text('cancel_reason')->nullable()->after('extra_data1');
+
+            $table->foreign('language_id')->references('id')->on('languages')
+                ->onDelete('set null')->onUpdate('cascade');
         });
     }
 
