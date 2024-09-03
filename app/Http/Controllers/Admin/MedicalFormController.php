@@ -18,6 +18,8 @@ class MedicalFormController extends Controller
     public function __construct(){
         $this->middleware('auth');
         $this->middleware('permission:read-medical-forms')->only('index');
+        $this->middleware('permission:create-medical-forms')->only('create', 'store');
+        $this->middleware('permission:update-medical-forms')->only('edit', 'update');
     }
 
     /**
@@ -140,10 +142,9 @@ class MedicalFormController extends Controller
         $uploaded = request()->file('file')->storeAs('imports', request()->file('file')->getClientOriginalName(), 'public');
 
         $xml = simplexml_load_file(Storage::disk('public')->path($uploaded));
+        $steps = (array) $xml->steps->children();
 
-        $steps = collect($xml->steps->children())->mapWithKeys(function ($step) {
-                    return [$step->step_no => $step->step_title];
-                })->toArray();
+        $steps = array_combine($steps['step_no'], $steps['step_title']);
 
         $medicalForm = MedicalForm::create([
             'title' => $xml->title.'-imported',
@@ -220,7 +221,7 @@ class MedicalFormController extends Controller
     public function destroy(string $id)
     {
         $user = auth()->user();
-        $user->hasPermissionTo('delete-medical-forms') ?: abort(403);
+        $user->hasRole('Super Admin') || $user->hasPermissionTo('delete-medical-forms') ?: abort(403);
 
         $form = MedicalForm::find($id);
 
