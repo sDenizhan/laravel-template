@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\InquiryStoredEvent;
+use App\Listeners\CheckUserLocationFromIpAddress;
 use App\Listeners\InquiryStoredListener;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         InquiryStoredEvent::class => [
             InquiryStoredListener::class
+        ],
+        Login::class => [
+            CheckUserLocationFromIpAddress::class
         ],
     ];
 

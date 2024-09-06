@@ -34,7 +34,7 @@
             <!-- Auth fluid right content -->
             <div class="auth-fluid-right text-center">
                 <div class="auth-user-testimonial">
-                    
+
                 </div> <!-- end auth-user-testimonial-->
             </div>
             <!-- end Auth fluid right content -->
@@ -44,5 +44,10 @@
         <!-- Authentication js -->
         <script src="{{ asset('themes/backend/default/assets/js/pages/authentication.init.js') }}"></script>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.0/moment.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.13/moment-timezone-with-data.js"></script>
+        <script>
+            document.getElementById('timezone').value = moment.tz.guess();
+        </script>
     </body>
 </html>

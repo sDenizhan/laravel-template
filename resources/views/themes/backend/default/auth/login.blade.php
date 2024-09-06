@@ -53,6 +53,7 @@
                 </div>
 
                 <div class="text-center d-grid">
+                    <input type="hidden" name="timezone" id="timezone">
                     <button class="btn btn-primary" type="submit">
                         {{ __('Login') }}
                     </button>

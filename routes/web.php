@@ -27,6 +27,15 @@ use App\Http\Controllers\MedicalFormController as MedicalForm;
 |
 */
 
+Route::get('/test', function () {
+    $request = Http::get('https://api.geoapify.com/v1/ipinfo', [
+        'apiKey' => '785fa62ac6754c3ba001f551e8565967',
+        'ip' => '78.172.201.123',
+    ]);
+
+    dd($request->json());
+});
+
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });

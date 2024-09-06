@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Jobs\CheckIpAddressFromGeoApi;
+use App\Models\LoginLog;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
