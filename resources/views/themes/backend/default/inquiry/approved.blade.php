@@ -23,13 +23,15 @@
                 <div class="card-header">
                     <ul class="nav nav-pills card-header-pills">
                         <li class="nav-item">
-                            <a class="nav-link active"
-                               href="{{ route('admin.inquiries.create') }}">{{ __('Add New') }}</a>
+                            <a class="nav-link active new_inquiry" href="{{ route('admin.inquiries.create') }}">{{ __('Add New') }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link open_filter" href="#" data-bs-toggle="modal" data-bs-target="#right-modal">{{ __('Open Filter') }}</a>
                         </li>
                     </ul>
                 </div>
                 <div class="card-body">
-                    <table id="basic-datatable" class="table dt-responsive nowrap w-100">
+                    <table id="datatable" class="table dt-responsive nowrap w-100">
                         <thead>
                         <tr>
                             <th>{{ __('Actions') }}</th>
@@ -43,86 +45,12 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach ($inquiries as $inquiry)
-                            <tr>
-                                <td>
-                                    <div class="btn-group">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle"
-                                                    data-bs-toggle="dropdown" aria-expanded="false">...
-                                            </button>
-                                            <div class="dropdown-menu">
-
-                                                @if ($inquiry->status == \App\Enums\InquiryStatus::APPROVED->value ||
-                                                    $inquiry->status == \App\Enums\InquiryStatus::NOT_REACHED->value ||
-                                                    $inquiry->status == \App\Enums\InquiryStatus::GIVE_UP->value ||
-                                                    $inquiry->status == \App\Enums\InquiryStatus::FORM_SENT->value )
-
-                                                    @hasrole('Super Admin|Coordinator')
-                                                        <a href="#" class="dropdown-item update_status" data-why="not_reached" data-status="{{ \App\Enums\InquiryStatus::NOT_REACHED->value }}" data-id="{{ $inquiry->id }}">
-                                                            <i class="fas fa-phone-slash"></i> {{ __('Not Reachable') }}
-                                                        </a>
-
-                                                        <a href="#" class="dropdown-item update_status" data-why="give_up" data-status="{{ \App\Enums\InquiryStatus::GIVE_UP->value }}" data-id="{{ $inquiry->id }}">
-                                                            <i class="fas fa-user-slash"></i> {{ __('Patient Has Give Up') }}
-                                                        </a>
-
-                                                        <a href="#" class="dropdown-item send_form_mail" data-id="{{ $inquiry->id }}">
-                                                            <i class="fas fa-mail-bulk"></i> {{ __('Sent Form via Email') }}
-                                                        </a>
-
-                                                        <a href="#" class="dropdown-item send_form_whatsapp" data-id="{{ $inquiry->id }}">
-                                                            <i class="fas fa-sms"></i> {{ __('Sent Form via Whatsapp') }}
-                                                        </a>
-                                                    @endrole
-
-                                                @endif
-
-                                                @if ($inquiry->status === \App\Enums\InquiryStatus::DOCTOR_SENT->value )
-
-                                                @endif
-
-                                                @can('edit-inquiry')
-                                                    <a href="{{ route('admin.inquiries.update', $inquiry->id) }}"
-                                                       class="dropdown-item show_inquiry" data-id="{{ $inquiry->id }}">
-                                                        <i class="fas fa-edit"></i> {{ __('Edit') }}
-                                                    </a>
-                                                @endcan
-
-                                                @can('view-inquiry')
-                                                    <a href="{{ route('admin.inquiries.show', $inquiry->id) }}" data-id="{{ $inquiry->id }}"
-                                                       class="dropdown-item show_inquiry">
-                                                        <i class="fas fa-eye"></i> {{ __('View') }}
-                                                    </a>
-                                                @endcan
-
-                                                @can('delete-inquiry')
-                                                    <a href="{{ route('admin.inquiries.rejected', ['inquiryId' => $inquiry->id]) }}"
-                                                       class="dropdown-item cancellation">
-                                                        <i class="fas fa-trash"></i> {{ __('Cancel') }}
-                                                    </a>
-                                                @endcan
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ $inquiry->id }}</td>
-                                <td>{{ $inquiry->name.' '. $inquiry->surname }}</td>
-                                <td>{{ $inquiry->treatment->name }}</td>
-                                <td>{{ $inquiry->country }}</td>
-                                <td>{{ __(\App\Enums\InquiryStatus::from($inquiry->status)->getLabel() ) }}</td>
-                                <td>{{ $inquiry->coordinator->name }}</td>
-                                <td>{{ $inquiry->created_at->format('d/m/Y H:i:s') }}</td>
-                            </tr>
-                        @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-
 
     <div class="modal fade" id="inquiryModal" tabindex="-1" role="dialog" aria-labelledby="inquiryModal"
          aria-hidden="true">
@@ -132,7 +60,7 @@
                     <h4 class="modal-title" id="inquiryModalTitle">Inquiry Details</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form method="post" action="{{ route('admin.inquiries.store') }}" id="inquiryModalForm">
+                <form method="post" action="{{ route('inquiries.store') }}" id="inquiryModalForm">
                     @csrf
                     @method('POST')
                     <div class="modal-body">
@@ -210,7 +138,97 @@
     <script>
         $(document).ready(function () {
 
-            //update status
+            var table = $('#datatable').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('admin.inquiries.approvedFilters') }}",
+                        type: 'POST',
+                        data: function (d) {
+                            d._token = "{{ csrf_token() }}";
+                            d.status = "{{ \App\Enums\InquiryStatus::APPROVED->value }}";
+                        }
+                    },
+                    columns: [
+                        {data: 'action', name: 'action'},
+                        {data: 'id', name: 'id'},
+                        {data: 'name_surname', name: 'name'},
+                        {data: 'treatment', name: 'treatment'},
+                        {data: 'country', name: 'country'},
+                        {data: 'status', name: 'status'},
+                        {data: 'coordinator', name: 'coordinator'},
+                        {data: 'registration_date', name: 'registration_date'},
+                    ],
+                    columnDefs : [
+                        {
+                            targets: 0,
+                            data: 'action',
+                            render : function (row, type, data) {
+                                console.log(data);
+                                var html = '<div class="btn-group">';
+                                html += '<div class="btn-group"><button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">...</button>';
+                                html += '<div class="dropdown-menu">';
+
+                                var allStatus = @json(\App\Enums\InquiryStatus::toArray());
+                                var currentStatus = data.status_id;
+
+                                if (
+                                    currentStatus === allStatus.APPROVED ||
+                                    currentStatus === allStatus.NOT_REACHED ||
+                                    currentStatus === allStatus.GIVE_UP ||
+                                    currentStatus === allStatus.FORM_SENT
+                                )
+                                {
+
+                                    @hasrole('Super Admin|Coordinator')
+                                        html += '<a href="#" class="dropdown-item update_status" data-why="not_reached" data-status="'+ allStatus.NOT_REACHED +'" data-id="'+ data.id +'">' +
+                                        '<i class="fas fa-phone-slash"></i> {{ __('Not Reachable') }}' +
+                                        '</a>' +
+                                        '<a href="#" class="dropdown-item update_status" data-why="give_up" data-status="'+ allStatus.GIVE_UP +'" data-id="'+ data.id +'">' +
+                                        '<i class="fas fa-user-slash"></i> {{ __('Patient Has Give Up') }} ' +
+                                        '</a>' +
+                                        '<a href="#" class="dropdown-item send_form_mail" data-id="'+ data.id +'">' +
+                                        '<i class="fas fa-mail-bulk"></i> {{ __('Sent Form via Email') }}' +
+                                        '</a>' +
+                                        '<a href="#" class="dropdown-item send_form_whatsapp" data-id="'+ data.id +'">' +
+                                        '<i class="fas fa-sms"></i> {{ __('Sent Form via Whatsapp') }}' +
+                                        '</a>' +
+                                        '<a href="#" class="dropdown-item copy_form_link" data-id="'+ data.id +'">' +
+                                        '<i class="fa fa-link"></i> {{ __('Copy Medical Form Link') }}' +
+                                        '</a>' +
+                                        '<a href="#" class="dropdown-item copy_reference_link" data-id="'+ data.id +'">' +
+                                        '<i class="fa fa-link"></i> {{ __('Copy Reference Link') }}' +
+                                        '</a>';
+                                    @endrole
+                                }
+
+                                if (currentStatus === allStatus.DOCTOR_SENT) {
+
+                                }
+
+                                @can('edit-inquiry')
+                                    html += '<a href="#" class="dropdown-item show_inquiry" data-id="'+ data.id +'"><i class="fas fa-eye"></i> {{ __('Show')  }}</a>';
+                                @endcan
+
+                                @can('view-inquiry')
+                                    var viewURL = "{{ route('admin.inquiries.show', ':id') }}".replace(':id', data.id);
+                                    html += '<a href="'+ viewURL +'" class="dropdown-item send_form_mail" data-id="'+ data.id +'"><i class="fas fa-mail-bulk"></i> {{ __('Send Form Mail') }}</a>';
+                                @endcan
+
+                                @can('edit-inquiry')
+                                    html += '<a href="#" class="dropdown-item cancellation" data-id="'+ data.id +'"><i class="fas fa-trash"></i> {{ __('Cancel') }}</a>';
+                                @endcan
+
+                                html += '</div></div>';
+                                html += '</div>';
+                                return html;
+                            }
+                        }
+                    ]
+                });
+
+
+                //update status
             $(document).on('click', '.update_status', function (e){
                 e.preventDefault();
 
@@ -305,13 +323,24 @@
 
                 $('h4.modal-title').text('Send Form Mail');
 
-                $.post('{{ route('admin.inquiries.send_form_mail') }}', {
+                $.post('{{ route('admin.inquiries.get-inquiry-message-template') }}', {
                     id: id,
+                    function : 'email',
                     _token : '{{ csrf_token() }}',
                     _method: 'POST',
                 }, function(response) {
-                    $('#inquiryModal .modal-body').html(response.html);
-                    $('#inquiryModal').modal('show');
+                    if ( response.status === 'success') {
+                        $('#inquiryModal .modal-body').html(response.html);
+                        $('.subject').remove();
+                        $('#inquiryModal .modal-footer').find('button.save_inquiry').addClass('wh_send').text('Send');
+                        $('#inquiryModal').modal('show');
+                    } else {
+                        Swal.fire(
+                            '{{ __('Error!') }}',
+                            response.message,
+                            'error'
+                        );
+                    }
                 });
             });
 
@@ -322,12 +351,13 @@
 
                 $('h4.modal-title').text('Send Form Whatsapp');
 
-                $.post('{{ route('admin.inquiries.send_form_mail') }}', {
+                $.post('{{ route('admin.inquiries.get-inquiry-message-template') }}', {
                     id: id,
+                    function : 'whatsapp',
                     _token : '{{ csrf_token() }}',
                     _method: 'POST',
                 }, function(response) {
-                    if ( response.status == 'success') {
+                    if ( response.status === 'success') {
                         $('#inquiryModal .modal-body').html(response.html);
                         $('.subject').remove();
                         $('#inquiryModal .modal-footer').find('button.save_inquiry').addClass('wh_send').text('Send');
@@ -372,6 +402,88 @@
                 $('#inquiryModal').modal('show');
             });
 
+
+            //new inquiry run modal
+            $(document).on('click', '.new_inquiry', function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                $('h4.modal-title').text('New Inquiry');
+
+                $.get(url, function(response) {
+                    $('#inquiryModal .modal-body').html(response.html);
+                    $('#inquiryModal').modal('show');
+                });
+            });
+
+
+            $(document).on('keyup', ' input#name', function(e) {
+                e.preventDefault();
+                var name = $(this).val();
+
+                if (name.length > 3) {
+                    $.post('{{ route('admin.inquiries.findCustomer') }}', {
+                        _method : 'POST',
+                        _token : '{{ csrf_token() }}',
+                        name: name
+                    },
+                    function(response) {
+                        if (response.status === 'success') {
+                            var list = '';
+                            for( var i = 0; i <= response.users.length-1; i++) {
+                                var data = response.users[i];
+                                list += '<li class="list-group-item" data-id="'+ data.id +'"><a href="#" class="select">'+ data.name + '</a></li>';
+                            }
+                            $('#inquiryModal .modal-body').find('div.results > ul').html(list);
+                            $('div.results').fadeIn();
+                        }
+                    });
+                }
+            });
+
+            $(document).on('click', 'a.select', function(e) {
+                e.preventDefault();
+                var id = $(this).parent().data('id');
+                var name = $(this).text();
+
+                var data = {
+                    id: id,
+                    name: name,
+                    _token : '{{ csrf_token() }}',
+                    _method : 'POST'
+                };
+
+                $.post('{{ route('admin.inquiries.find-inquiry') }}', data, function (response){
+                    if ( response.status === 'success' ) {
+                        var inquiry = response.inquiry;
+                        $('#inquiryModal').find('input#name').val(inquiry.name);
+                        $('#inquiryModal').find('input#surname').val(inquiry.surname);
+                        $('#inquiryModal').find('input#email').val(inquiry.email);
+                        $('#inquiryModal').find('input#phone').val(inquiry.phone);
+                        $('#inquiryModal').find('input#country').val(inquiry.country);
+                        $('#inquiryModal').find('select#treatment_id').val(inquiry.treatment_id);
+                        $('#inquiryModal').find('select#language_id').val(inquiry.language_id);
+                        $('div.results').fadeOut();
+                    }
+                })
+            });
+
+            //save
+            $(document).on('click', '.save_inquiry', function(e) {
+                e.preventDefault();
+                var form = $('#inquiryModalForm');
+                var url = form.attr('action');
+                var data = form.serialize();
+
+                $.post(url, data, function(response) {
+                    if (response.status == 'success') {
+                        $('#inquiryModal').find('div.modal-body > div.row').after('<div class="row"><div class="alert alert-success"><p>'+ response.message +'</p></div></div>')
+                    } else {
+                        $('#inquiryModal').find('div.modal-body').append('div.alert.alert-danger').empty().html('<p>' + response.message + '</p>');
+                    }
+                });
+            });
+
         });
     </script>
 @endpush
+

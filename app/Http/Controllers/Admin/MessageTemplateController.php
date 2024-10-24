@@ -19,21 +19,21 @@ class MessageTemplateController extends Controller
         $this->middleware('permission:delete-message', ['only' => ['destroy']]);
     }
 
-    public function index()
+    public function index() : \Illuminate\View\View
     {
         return view('message-templates.index', [
             'templates' => MessageTemplate::orderBy('id','DESC')->paginate(75)
         ]);
     }
 
-    public function create()
+    public function create() : \Illuminate\View\View
     {
         $languages = Language::all();
         $treatments = Treatments::all();
         return view('message-templates.create', compact('languages', 'treatments'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request) : \Illuminate\Http\RedirectResponse
     {
         $validated = \Validator::make($request->all(), [
             'title' => 'required',
@@ -48,12 +48,15 @@ class MessageTemplateController extends Controller
             return redirect()->back()->withErrors($validated)->withInput();
         }
 
+        $input = (object) $validated->validated();
+
         MessageTemplate::create([
-            'treatment_id' => $request->treatment_id,
-            'language_id' => $request->language_id,
-            'title' => $request->title,
-            'type' => $request->type.'_'.$request->action,
-            'message' => $request->content,
+            'treatment_id' => $input->treatment_id,
+            'language_id' => $input->language_id,
+            'title' => $input->title,
+            'type' => $input->type,
+            'action' => $input->action,
+            'message' => $input->content,
         ]);
 
         return redirect()->route('admin.message-template.index')

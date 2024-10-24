@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('language_id')->unsigned();
             $table->text('type');
             $table->string('title');
+            $table->text('action');
             $table->json('message');
             $table->timestamps();
             $table->softDeletes();

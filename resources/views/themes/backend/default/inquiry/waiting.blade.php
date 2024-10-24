@@ -23,7 +23,10 @@
             <div class="card-header">
                 <ul class="nav nav-pills card-header-pills">
                     <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('admin.inquiries.create') }}">{{ __('Add New') }}</a>
+                        <a class="nav-link active new_inquiry" href="{{ route('admin.inquiries.create') }}">{{ __('Add New') }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link open_filter" href="#" data-bs-toggle="modal" data-bs-target="#right-modal">{{ __('Open Filter') }}</a>
                     </li>
                 </ul>
             </div>
@@ -41,28 +44,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($inquiries as $inquiry)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('admin.inquiries.update', $inquiry->id) }}" class="btn btn-sm btn-primary show_inquiry" data-id="{{ $inquiry->id }}"><i class="fas fa-edit"></i></a>
-                                    <a href="{{ route('admin.inquiries.show', $inquiry->id) }}" class="btn btn-sm btn-info"><i class="fas fa-eye"></i> </a>
-                                    <a href="{{ route('admin.inquiries.rejected', ['inquiryId' => $inquiry->id]) }}" class="btn btn-sm btn-danger cancellation"><i class="fas fa-trash"></i></a>
-                                </td>
-                                <td>{{ $inquiry->id }}</td>
-                                <td>{{ $inquiry->name.' '. $inquiry->surname }}</td>
-                                <td>{{ $inquiry->assigment_to ?? $inquiry->coordinator->name ?? '-' }}</td>
-                                <td>{{ $inquiry->created_at->format('d/m/Y H:i:s') }}</td>
-                                <td>{{ $inquiry->treatment->name }}</td>
-                                <td>{{ $inquiry->country }}</td>
-                            </tr>
-                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
-
 
 <div class="modal fade" id="inquiryModal" tabindex="-1" role="dialog" aria-labelledby="inquiryModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -115,15 +102,61 @@
     <!-- third party js ends -->
 
     <!-- Datatables init -->
-    <script src=" {{ asset('themes/backend/default/assets/js/pages/datatables.init.js') }}"></script>
-    <script src="{{ asset('themes/backend/default/assets/js/pages/fontawesome.init.js') }}"></script>
 
     <script>
         $(document).ready(function(){
+
+            var table = $('#basic-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('admin.inquiries.waitingFilters') }}",
+                    type: 'POST',
+                    data: function (d) {
+                        d._token = "{{ csrf_token() }}";
+                        d.status = "{{ \App\Enums\InquiryStatus::WAITING->value }}";
+                    }
+                },
+                columns: [
+                    {data: 'action', name: 'action'},
+                    {data: 'id', name: 'id'},
+                    {data: 'name_surname', name: 'name'},
+                    {data: 'coordinator', name: 'coordinator'},
+                    {data: 'registration_date', name: 'registration_date'},
+                    {data: 'treatment', name: 'treatment'},
+                    {data: 'country', name: 'country'}
+                ],
+                columnDefs : [
+                    {
+                        targets: 0,
+                        data: 'action',
+                        render : function (row, type, data) {
+                            console.log(data);
+                            var html = '<div class="btn-group">';
+                            html += '<div class="btn-group"><button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">...</button>';
+                            html += '<div class="dropdown-menu">';
+                            @can('edit-inquiry')
+                                html += '<a href="#" class="dropdown-item show_inquiry" data-id="'+ data.id +'"><i class="fas fa-eye"></i> {{ __('Show')  }}</a>';
+                            @endcan
+
+                            @can('edit-inquiry')
+                                html += '<a href="#" class="dropdown-item cancellation" data-id="'+ data.id +'"><i class="fas fa-trash"></i> {{ __('Cancel') }}</a>';
+                            @endcan
+
+                            html += '</div></div>';
+                            html += '</div>';
+
+                            return html;
+                        }
+                    }
+                ]
+            });
+
             $(document).on('click', '.show_inquiry', function(e) {
                 e.preventDefault();
+                var url = '{{ route('admin.inquiries.update', ['inquiry' => 'inquiryId']) }}';
                 var id = $(this).data('id');
-                var url = $(this).attr('href');
+                url = url.replace('inquiryId', id);
 
                 $('h4.modal-title').text('Inquiry Details');
 

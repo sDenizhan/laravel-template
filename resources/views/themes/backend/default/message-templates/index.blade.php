@@ -118,44 +118,6 @@
 
     <script>
         $(document).ready(function(){
-            $(document).on('click', '.show_inquiry', function(e) {
-                e.preventDefault();
-                var id = $(this).data('id');
-                var url = $(this).attr('href');
-
-                $('h4.modal-title').text('Inquiry Details');
-
-                $.get(url, {id: id}, function(response) {
-                    $('#inquiryModal .modal-body').html(response.html);
-                    $('#inquiryModal').modal('show');
-                });
-            });
-
-            //cancellation
-            $(document).on('click', '.cancellation', function(e) {
-                e.preventDefault();
-                $('h4.modal-title').text('Reason For Cancellation');
-                var html = '<div class="form-group"><label for="reason" class="form-label">Reason For Cancellation</label><textarea class="form-control" name="cancel" id="cancel" rows="3"></textarea></div>';
-
-                $('#inquiryModal .modal-body').html(html);
-                $('#inquiryModal').modal('show');
-            });
-
-            //save
-            $(document).on('click', '.save_inquiry', function(e) {
-                e.preventDefault();
-                var form = $('#inquiryModalForm');
-                var url = form.attr('action');
-                var data = form.serialize();
-
-                $.post(url, data, function(response) {
-                    if (response.status == 'success') {
-                        $('#inquiryModal').find('div.modal-body > div.row').after('<div class="row"><div class="alert alert-success"><p>'+ response.message +'</p></div></div>')
-                    } else {
-                        $('#inquiryModal').find('div.modal-body').append('div.alert.alert-danger').empty().html('<p>' + response.message + '</p>');
-                    }
-                });
-            });
         });
     </script>
 @endpush

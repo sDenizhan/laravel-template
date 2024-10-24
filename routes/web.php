@@ -74,13 +74,19 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     //inquaries
     Route::get('/inquiries/waiting', [InquiryController::class, 'waiting'])->name('inquiries.waiting');
+    Route::post('/inquiries/waiting-filters', [InquiryController::class, 'filter'])->name('inquiries.waitingFilters');
+    Route::post('/inquiries/approved-filters', [InquiryController::class, 'approved_filter'])->name('inquiries.approvedFilters');
+
     Route::get('/inquiries/approved', [InquiryController::class, 'approved'])->name('inquiries.approved');
     Route::post('/inquiries/show', [InquiryController::class, 'show'])->name('inquiries.show');
     Route::get('/inquiries/rejected/{inquiryId}', [InquiryController::class, 'rejected'])->name('inquiries.rejected');
     Route::post('/inquiries/statusUpdate', [InquiryController::class, 'statusUpdate'])->name('inquiries.statusUpdate');
 
-    Route::post('/inquiries/send_form_mail', [InquiryController::class, 'sendFormWithMail'])->name('inquiries.send_form_mail');
-    Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'sendFormWithWhatsapp'])->name('inquiries.send_to_whatsapp');
+    Route::post('/inquiries/findCustomer', [InquiryController::class, 'findCustomer'])->name('inquiries.findCustomer');
+    Route::post('/inquiries/find', [InquiryController::class, 'findInquiry'])->name('inquiries.find-inquiry');
+
+    Route::post('/inquiries/get-inquiry-message-template', [InquiryController::class, 'getInquiryMessageTemplate'])->name('inquiries.get-inquiry-message-template');
+    Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'send_with_whatsapp'])->name('inquiries.send_to_whatsapp');
 
     //medical-forms-questions
     Route::get('/medical-form-questions/add-question/{formId}', [MedicalFormQuestionController::class, 'addQuestion'])->name('medical-form-questions.add-question');

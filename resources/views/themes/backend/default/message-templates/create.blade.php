@@ -91,6 +91,10 @@
                         </div> <!-- end row-->
                     </div>
                     <div class="card-footer mt-3">
+                        <p>
+                            {!! __('Meta Keywords: :words', ['words' => \Illuminate\Support\Arr::join(["username", "password", "patient_name", "patient_surname", "your_medical_form_link"], ',')]) !!}
+                        </p>
+                        <br />
                         <button type="submit" class="btn btn-sm btn-primary">{{ __('Save') }}</button>
                     </div>
                 </form>

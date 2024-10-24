@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Events\InquiryStoredEvent;
+use App\Events\MedicalFormSentEvent;
 use App\Listeners\CheckUserLocationFromIpAddress;
 use App\Listeners\InquiryStoredListener;
+use App\Listeners\UpdateInquiryStatusAfterWhatsappMessage;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -19,6 +21,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+        MedicalFormSentEvent::class => [
+            UpdateInquiryStatusAfterWhatsappMessage::class
+        ],
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],

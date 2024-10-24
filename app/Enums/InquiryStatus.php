@@ -47,4 +47,19 @@ enum InquiryStatus: int
             self::OPERATION_DONE => 'Operation done',
         };
     }
+
+    public static function toArray() : array
+    {
+        return collect(self::cases())->mapWithKeys(fn($value, $key) => [$value->name => $value->value])->toArray();
+    }
+
+    public static function toJson(): string
+    {
+        return collect(self::cases())->mapWithKeys(function($value, $key) {
+            return [
+                'value' => $value->value,
+                'name' => $value->getLabel()
+            ];
+        })->toJson();
+    }
 }
