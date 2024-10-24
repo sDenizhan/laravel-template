@@ -49,6 +49,11 @@ class InquiryController extends Controller
         //main query
         $query = Inquiry::with(['coordinator', 'treatment'])->where(['status' => $status]);
 
+        //coordinator ise sadece kendi atandığı hastaları görebilir
+        if ( auth()->user()->hasRole('Coordinator') ) {
+            $query->where('assignment_to', auth()->id());
+        }
+
         //search
         if ( !empty($search) ) {
             $query->where('name', 'like', '%'.$search.'%')
@@ -63,6 +68,12 @@ class InquiryController extends Controller
 
         //toplam data
         $totalFiltered = $query->count();
+
+        if ( auth()->user()->hasRole('Super Admin') ) {
+            $totalData = Inquiry::where('status', '>=', $status)->count();
+        } else {
+            $totalData = Inquiry::where('status', '>=', $status)->where(['assignment_to' => auth()->id()])->count();
+        }
 
         //sıralama ve sayfalama
         $inquiries = $query->offset($start)
@@ -84,8 +95,6 @@ class InquiryController extends Controller
             ];
             $data[] = $nestedData;
         }
-
-        $totalData = Inquiry::where(['status' => $status])->count();
 
         $json_data = [
             "draw" => intval($request->input('draw')),
