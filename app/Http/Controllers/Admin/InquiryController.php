@@ -32,6 +32,11 @@ class InquiryController extends Controller
         $this->middleware('permission:delete-inquiry', ['only' => ['destroy']]);
     }
 
+    public function waiting()
+    {
+        return view('inquiry.waiting');
+    }
+
     public function filter(Request $request) : \Illuminate\Http\JsonResponse
     {
         $columns = ['id', 'name_surname', 'coordinator', 'registration_date', 'treatment', 'country'];
@@ -70,9 +75,9 @@ class InquiryController extends Controller
         $totalFiltered = $query->count();
 
         if ( auth()->user()->hasRole('Super Admin') ) {
-            $totalData = Inquiry::where('status', '>=', $status)->count();
+            $totalData = Inquiry::where('status', '=', $status)->count();
         } else {
-            $totalData = Inquiry::where('status', '>=', $status)->where(['assignment_to' => auth()->id()])->count();
+            $totalData = Inquiry::where('status', '=', $status)->where(['assignment_to' => auth()->id()])->count();
         }
 
         //sıralama ve sayfalama
@@ -180,12 +185,6 @@ class InquiryController extends Controller
         ];
 
         return response()->json($json_data);
-    }
-
-    public function waiting()
-    {
-        $inquiries = Inquiry::where(['status' => InquiryStatus::WAITING->value])->get();
-        return view('inquiry.waiting', compact('inquiries'));
     }
 
     public function approved()
