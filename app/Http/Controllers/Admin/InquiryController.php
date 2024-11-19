@@ -7,6 +7,7 @@ use App\Events\InquiryStoredEvent;
 use App\Events\MedicalFormSentEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InquiryStoreRequest;
+use App\Models\DoctorHasInquiry;
 use App\Models\Inquiry;
 use App\Models\Language;
 use App\Models\MedicalForm;
@@ -111,6 +112,11 @@ class InquiryController extends Controller
         return response()->json($json_data);
     }
 
+    public function approved(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
+        return view('inquiry.approved');
+    }
+
     public function approved_filter(Request $request) : \Illuminate\Http\JsonResponse
     {
         $columns = ['id', 'name_surname', 'treatment', 'country', 'status', 'coordinator', 'registration_date'];
@@ -126,7 +132,7 @@ class InquiryController extends Controller
         $search = $request->input('search.value');
 
         //main query
-        $query = Inquiry::with(['coordinator', 'treatment'])->where('status', '>=', $status);
+        $query = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '>=', $status);
 
         //coordinator ise sadece kendi atandığı hastaları görebilir
         if ( auth()->user()->hasRole('Coordinator') ) {
@@ -149,9 +155,9 @@ class InquiryController extends Controller
         $totalFiltered = $query->count();
 
         if ( auth()->user()->hasRole('Super Admin') ) {
-            $totalData = Inquiry::where('status', '>=', $status)->count();
+            $totalData = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '>=', $status)->count();
         } else {
-            $totalData = Inquiry::where('status', '>=', $status)->where(['assignment_to' => auth()->id()])->count();
+            $totalData = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '>=', $status)->where(['assignment_to' => auth()->id()])->count();
         }
 
         //sıralama ve sayfalama
@@ -172,7 +178,11 @@ class InquiryController extends Controller
                 'country' => $inquiry->country,
                 'status' => __(\App\Enums\InquiryStatus::from($inquiry->status)->getLabel() ),
                 'status_id' => $inquiry->status,
-                'action' => ''
+                'code' => $inquiry->answers->code ?? '',
+                'medical_form_link' => route('medical-forms.show', $inquiry->answers->code ?? '') ?? '',
+                'action' => '',
+                'email' => $inquiry->email,
+                'phone' => $inquiry->phone
             ];
             $data[] = $nestedData;
         }
@@ -187,16 +197,87 @@ class InquiryController extends Controller
         return response()->json($json_data);
     }
 
-    public function approved()
+    public function anaesthetist(): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
-        $inquiries = Inquiry::where('status', '>=', InquiryStatus::APPROVED->value)
-            ->when(auth()->user()->hasRole('Coordinator'), function ($query){
-                return $query->where('assignment_to', auth()->id());
-            })->when(auth()->user()->hasRole('Super Admin'), function ($query){
-                return $query;
-            })
+        return view('inquiry.anaesthetist');
+    }
+
+    public function anaesthetist_filter(Request $request) : \Illuminate\Http\JsonResponse
+    {
+        $columns = ['id', 'name_surname', 'treatment', 'country', 'status', 'coordinator', 'registration_date'];
+
+        // Sıralama ve sayfalama parametreleri
+        $limit = $request->input('length');
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+        $status = InquiryStatus::ANESTHESIA_SENT->value;
+
+        // Filtreleme
+        $search = $request->input('search.value');
+
+        //main query
+        $query = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '=', $status);
+
+        //search
+        if ( !empty($search) ) {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('surname', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhere('phone', 'like', '%'.$search.'%')
+                ->orWhere('country', 'like', '%'.$search.'%')
+                ->orWhereHas('treatment', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                });
+        }
+
+        //toplam data
+        $totalFiltered = $query->count();
+        $totalData = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '=', $status)->count();
+
+        //sıralama ve sayfalama
+        $inquiries = $query->offset($start)
+            ->limit($limit)
+            ->orderBy($order, $dir)
             ->get();
-        return view('inquiry.approved', compact('inquiries'));
+
+        //data
+        $data = [];
+        foreach ($inquiries as $inquiry) {
+            $nestedData = [
+                'id' => $inquiry->id,
+                'name_surname' => maskWord($inquiry->name) . ' ' . maskWord($inquiry->surname),
+                'coordinator' => $inquiry->coordinator->name ?? '-',
+                'registration_date' => $inquiry->created_at->format('d.m.Y H:i'),
+                'treatment' => $inquiry->treatment->name,
+                'country' => $inquiry->country,
+                'status' => __(\App\Enums\InquiryStatus::from($inquiry->status)->getLabel() ),
+                'status_id' => $inquiry->status,
+                'code' => $inquiry->answers->code ?? '',
+                'medical_form_link' => route('medical-forms.show', $inquiry->answers->code) ?? '',
+                'action' => ''
+            ];
+            $data[] = $nestedData;
+        }
+
+        $json_data = [
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data" => auth()->user()->hasRole('Super Admin') ? $data : collect($data)->filter(function ($item) {
+
+                $inquiry = DoctorHasInquiry::where(['doctor_id' => auth()->id()])->first() ?? null;
+
+                if (!$inquiry) {
+                    return false;
+                }
+
+                return $inquiry->inquiry_id == $item['id'];
+
+            })->values()
+        ];
+
+        return response()->json($json_data);
     }
 
     /**

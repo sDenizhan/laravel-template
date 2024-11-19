@@ -21,14 +21,6 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <ul class="nav nav-pills card-header-pills">
-                    <li class="nav-item">
-                        <a class="nav-link active new_inquiry" href="{{ route('admin.inquiries.create') }}">{{ __('Add New') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link open_filter" href="#" data-bs-toggle="modal" data-bs-target="#right-modal">{{ __('Open Filter') }}</a>
-                    </li>
-                </ul>
             </div>
             <div class="card-body">
                 <table id="basic-datatable" class="table dt-responsive nowrap w-100">
@@ -37,7 +29,6 @@
                             <th>{{ __('Actions') }}</th>
                             <th>{{ __('ID') }}</th>
                             <th>{{ __('Name Surname') }}</th>
-                            <th>{{ __('Coordinator') }}</th>
                             <th>{{ __('Registration Date') }}</th>
                             <th>{{ __('Treatment') }}</th>
                             <th>{{ __('Country') }}</th>
@@ -54,8 +45,8 @@
 <div class="modal fade" id="inquiryModal" tabindex="-1" role="dialog" aria-labelledby="inquiryModal" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="inquiryModalTitle">Inquiry Details</h4>
+            <div class="modal-header bg-primary">
+                <h4 class="modal-title" id="inquiryModalTitle" style="color: #ebebeb">Inquiry Details</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="{{ route('admin.inquiries.store') }}" id="inquiryModalForm">
@@ -121,7 +112,6 @@
                     {data: 'action', name: 'action'},
                     {data: 'id', name: 'id'},
                     {data: 'name_surname', name: 'name'},
-                    {data: 'coordinator', name: 'coordinator'},
                     {data: 'registration_date', name: 'registration_date'},
                     {data: 'treatment', name: 'treatment'},
                     {data: 'country', name: 'country'}
@@ -184,8 +174,13 @@
                 var data = form.serialize();
 
                 $.post(url, data, function(response) {
-                    if (response.status == 'success') {
-                        $('#inquiryModal').find('div.modal-body > div.row').after('<div class="row"><div class="alert alert-success"><p>'+ response.message +'</p></div></div>')
+                    if (response.status === 'success') {
+                        $('#inquiryModal').find('div.modal-body > div.row').after('<div class="row"><div class="alert alert-success"><p>'+ response.message +'</p></div></div>');
+
+                        setTimeout(function() {
+                            $('#inquiryModal').modal('hide');
+                            table.ajax.reload();
+                        }, 1000);
                     } else {
                         $('#inquiryModal').find('div.modal-body').append('div.alert.alert-danger').empty().html('<p>' + response.message + '</p>');
                     }

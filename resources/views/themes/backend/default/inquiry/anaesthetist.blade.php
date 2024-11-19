@@ -4,8 +4,8 @@
     @php
         $data = [
             [
-                'title' => __('Approved Inquiries'),
-                'url' => route('admin.inquiries.index')
+                'title' => __('Inquiries'),
+                'url' => route('admin.inquiries.anaesthetist')
             ],
             [
                 'title' => __('Index'),
@@ -13,7 +13,7 @@
             ]
         ];
     @endphp
-    <x-backend.breadcrumbs title="{{ __('Approved Inquiries') }}" :links="$data"/>
+    <x-backend.breadcrumbs title="{{ __('Inquiries') }}" :links="$data"/>
 @endsection
 
 @section('content')
@@ -21,11 +21,6 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <ul class="nav nav-pills card-header-pills">
-                        <li class="nav-item">
-                            <a class="nav-link active new_inquiry" href="{{ route('admin.inquiries.create') }}">{{ __('Add New') }}</a>
-                        </li>
-                    </ul>
                 </div>
                 <div class="card-body">
                     <table id="datatable" class="table dt-responsive nowrap w-100">
@@ -39,8 +34,6 @@
                             <th>{{ __('Status') }}</th>
                             <th>{{ __('Coordinator') }}</th>
                             <th>{{ __('Registration Date') }}</th>
-                            <th>{{ __('Email Address') }}</th>
-                            <th>{{ __('Phone Number') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -55,9 +48,9 @@
          aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary">
-                    <h4 class="modal-title" style="color: #fff" id="inquiryModalTitle">Inquiry Details</h4>
-                    <button type="button" style="color: #fff" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="inquiryModalTitle">Inquiry Details</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post" action="{{ route('inquiries.store') }}" id="inquiryModalForm">
                     @csrf
@@ -147,11 +140,11 @@
                     processing: true,
                     serverSide: true,
                     ajax: {
-                        url: "{{ route('admin.inquiries.approvedFilters') }}",
+                        url: "{{ route('admin.inquiries.anaesthetistFilter') }}",
                         type: 'POST',
                         data: function (d) {
                             d._token = "{{ csrf_token() }}";
-                            d.status = "{{ \App\Enums\InquiryStatus::APPROVED->value }}";
+                            d.status = "{{ \App\Enums\InquiryStatus::ANESTHESIA_SENT->value }}";
                         }
                     },
                     columns: [
@@ -163,8 +156,6 @@
                         {data: 'status', name: 'status'},
                         {data: 'coordinator', name: 'coordinator'},
                         {data: 'registration_date', name: 'registration_date'},
-                        {data: 'email', name: 'email'},
-                        {data: 'phone', name: 'phone'}
                     ],
                     columnDefs : [
                         {
@@ -219,7 +210,7 @@
 
                                 if ( currentStatus === allStatus.FORM_RECEIVED ) {
                                     html += '<a href="#" class="dropdown-item send_to_anesthesia" data-id="'+ data.id +'">'+
-                                        '<i class="fas fa-user-md"></i> {{ __('Send to Anaesthetist Doctor') }}' +
+                                        '<i class="fas fa-user-md"></i> {{ __('Send to Anesthesia') }}' +
                                         '</a>';
                                 }
 
@@ -266,19 +257,12 @@
                                 html += '</div>';
                                 return html;
                             }
-                        },
-                        {
-                            targets: 5,
-                            data: 'status',
-                            render : function (row, type, data) {
-                                return '<span class="badge badge-soft-success">'+ row +'</span>';
-                            }
                         }
                     ]
                 });
 
 
-            //update status
+                //update status
             $(document).on('click', '.update_status', function (e){
                 e.preventDefault();
 
@@ -555,7 +539,7 @@
                     if ( response.status === 'success') {
 
                         var doctors = response.data;
-                        var options = '<select name="doctor_id[]" id="doctor_id" placeholder="Deneme" multiple class="form-control select2">';
+                        var options = '<select name="doctor_id[]" id="doctor_id" multiple class="form-control select2">';
                         for (var i = 0; i <= doctors.length-1; i++) {
                             var doctor = doctors[i];
                             options += '<option value="'+ doctor.id +'">'+ doctor.name +'</option>';
@@ -566,12 +550,7 @@
                         html += '<input type="hidden" name="inquiry_id" value="'+ id +'">';
                         $('#inquiryModal .modal-body').html(html);
 
-                        $('#inquiryModal .modal-body').find('select#doctor_id').select2({
-                            placeholder: {
-                                id: '-1',
-                                text: 'Select Anaesthesia'
-                            }
-                        }).trigger('change');
+                        $('#inquiryModal .modal-body').find('select#doctor_id').select2().trigger('change');
 
                         $('#inquiryModal .modal-footer').find('button.save_inquiry').addClass('send_to_anaesthesia').text('Send');
                         $('#inquiryModal').modal('show');

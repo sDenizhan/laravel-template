@@ -2,10 +2,15 @@
 
 namespace App\Providers;
 
+use App\Events\EventAfterSendingToAnaesthetistDoctors;
 use App\Events\InquiryStoredEvent;
 use App\Events\MedicalFormSentEvent;
+use App\Listeners\AddRecordAfterSendingToAanaesthetist;
 use App\Listeners\CheckUserLocationFromIpAddress;
 use App\Listeners\InquiryStoredListener;
+use App\Listeners\ListenerSendingEmailtoAnaesthetistDoctors;
+use App\Listeners\ListenerSendingNotifytoAnaesthetistDoctors;
+use App\Listeners\UpdateInquiryStatusAfterSentAnaesthetistDoctor;
 use App\Listeners\UpdateInquiryStatusAfterWhatsappMessage;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Registered;
@@ -21,6 +26,12 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+        EventAfterSendingToAnaesthetistDoctors::class => [
+            //ListenerSendingEmailtoAnaesthetistDoctors::class,
+            //ListenerSendingNotifytoAnaesthetistDoctors::class,
+            UpdateInquiryStatusAfterSentAnaesthetistDoctor::class,
+            AddRecordAfterSendingToAanaesthetist::class
+        ],
         MedicalFormSentEvent::class => [
             UpdateInquiryStatusAfterWhatsappMessage::class
         ],

@@ -47,7 +47,7 @@ Route::post('/medical-forms/update', [MedicalForm::class, 'update'])->name('medi
 Route::post('/medical-forms/finishUpdate', [MedicalForm::class, 'finishUpdate'])->name('medical-forms.finishUpdate');
 
 
-Route::prefix('webapi')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
+Route::prefix('webapi')->name('api.')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
 
     Route::get('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'index'])->name('treatment.list');
     Route::post('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'store'])->name('treatment.store');
@@ -57,6 +57,9 @@ Route::prefix('webapi')->middleware([\App\Http\Middleware\CorsMiddleware::class]
 
     Route::get('/users', [App\Http\Controllers\API\UserController::class, 'index'])->name('user.list');
     Route::post('/users', [App\Http\Controllers\API\UserController::class, 'store'])->name('user.store');
+
+    //doctors
+    Route::post('doctors', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
 
     //inquiries
     Route::get('/inquiries/waiting', [App\Http\Controllers\API\InquiryController::class, 'waiting'])->name('inquiries.waiting');
@@ -71,6 +74,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     //doctor
     Route::get('/doctors', [App\Http\Controllers\Admin\DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctors/anaesthetist', [App\Http\Controllers\Admin\DoctorController::class, 'anaesthetist'])->name('doctors.anaesthetist');
+    Route::post('/doctors/send-anaesthetist', [App\Http\Controllers\Admin\DoctorController::class, 'sendingAnaesthetist'])->name('doctors.send_to_anaesthesia');
 
     //inquaries
     Route::get('/inquiries/waiting', [InquiryController::class, 'waiting'])->name('inquiries.waiting');
@@ -87,6 +91,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     Route::post('/inquiries/get-inquiry-message-template', [InquiryController::class, 'getInquiryMessageTemplate'])->name('inquiries.get-inquiry-message-template');
     Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'send_with_whatsapp'])->name('inquiries.send_to_whatsapp');
+
+    //
+    Route::get('/inquiries/anaesthetist', [InquiryController::class, 'anaesthetist'])->name('inquiries.anaesthetist');
+    Route::post('/inquiries/filter-anaesthetist', [InquiryController::class, 'anaesthetist_filter'])->name('inquiries.anaesthetistFilter');
 
     //medical-forms-questions
     Route::get('/medical-form-questions/add-question/{formId}', [MedicalFormQuestionController::class, 'addQuestion'])->name('medical-form-questions.add-question');
@@ -105,7 +113,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         'status' => StatusController::class,
         'inquiries' => InquiryController::class,
         'hospitals' => HospitalController::class,
-        'doctors' => DoctorController::class,
         'medical-forms' => MedicalFormController::class,
         'medical-form-questions' => MedicalFormQuestionController::class,
         'languages' => LanguageController::class,

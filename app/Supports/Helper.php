@@ -30,6 +30,15 @@ function html_to_markdown(?string $html = '')
     $html = str_replace('<h6>', '###### ', $html);
     $html = str_replace('</h6>', '', $html);
 
-
     return $html;
+}
+
+
+function maskWord($word, $sign = '*')
+{
+    if ( strlen($word) > 1 ) {
+        $word = substr($word, 0, 1) . str_repeat($sign, strlen($word) - 1);
+    }
+
+    return ucfirst($word);
 }

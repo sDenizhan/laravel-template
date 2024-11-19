@@ -22,4 +22,9 @@ class Inquiry extends Model
     {
         return $this->belongsTo(User::class, 'assignment_to', 'id');
     }
+
+    public function answers(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(MedicalFormPatientAnswers::class, 'inquiry_id', 'id');
+    }
 }
