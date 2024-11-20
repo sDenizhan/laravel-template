@@ -20,6 +20,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('themes.backend.default.home');
+        return view('dashboard.home');
     }
 }
