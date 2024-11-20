@@ -129,7 +129,7 @@ class MedicalFormController extends Controller
         return view('medical-forms.import');
     }
 
-    #[NoReturn] public function importStore()
+    public function importStore(): \Illuminate\Http\RedirectResponse
     {
         $validated = \Validator::make(request()->all(), [
             'file' => 'required|mimes:xml'
