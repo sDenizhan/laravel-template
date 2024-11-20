@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\InquiryStatus;
 use App\Http\Controllers\Controller;
+use App\Models\Inquiry;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -20,6 +22,16 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard.home');
+        $latest = Inquiry::with(['coordinator'])->orderBy('created_at', 'desc')->limit(10)->latest()->get();
+
+        $userInquiries = Inquiry::with(['coordinator'])->where('status', '>=', InquiryStatus::APPROVED->value);
+
+        if ( auth()->user()->hasRole('Coordinator') ) {
+            $userInquiries->where('assigment_to', auth()->user()->id);
+        }
+
+        $userInquiries = $userInquiries->latest()->limit(10)->get();
+
+        return view('dashboard.home', compact('latest', 'userInquiries'));
     }
 }
