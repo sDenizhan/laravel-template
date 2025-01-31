@@ -89,17 +89,20 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $input = $request->all();
+        $input = $request->validated();
 
         if(!empty($request->password)){
             $input['password'] = Hash::make($request->password);
         }else{
-            $input = $request->except('password');
+            $input = $request->except(['password', 'password_confirmation']);
         }
+
+        $roles = $input['roles'];
+        unset($input['roles']);
 
         $user->update($input);
 
-        $user->syncRoles($request->roles);
+        $user->syncRoles($roles);
 
         return redirect()->back()
                 ->withSuccess('User is updated successfully.');

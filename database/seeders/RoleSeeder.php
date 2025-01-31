@@ -13,12 +13,13 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create(['name' => 'Super Admin']);
+        $super = Role::create(['name' => 'Super Admin']);
         $admin = Role::create(['name' => 'Admin']);
         $coordinator = Role::create(['name' => 'Coordinator']);
         $doctor = Role::create(['name' => 'Doctor']);
         $anaesthetist = Role::create(['name' => 'Anaesthetist']);
         $patient = Role::create(['name' => 'Patient']);
+
 
         $coordinator->givePermissionTo([
             'view-inquiry',

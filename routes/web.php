@@ -28,43 +28,41 @@ use App\Http\Controllers\MedicalFormController as MedicalForm;
 */
 
 Route::get('/test', function () {
-    $request = Http::get('https://api.geoapify.com/v1/ipinfo', [
-        'apiKey' => '785fa62ac6754c3ba001f551e8565967',
-        'ip' => '78.172.201.123',
-    ]);
+    $user = \App\Models\User::find(1);
+    $user->givePermissionTo(\App\Models\Permission::pluck('name')->toArray());
 
-    dd($request->json());
+    dd();
 });
 
-Route::get('/', function () {
-    return redirect()->route('admin.dashboard');
-});
+//Route::get('/', function () {
+//    return redirect()->route('admin.dashboard');
+//});
 
 Auth::routes();
 
-Route::get('/medical-forms/show/{formId}', [MedicalForm::class, 'index'])->name('medical-forms.show');
+Route::get('/medical-forms/view/{formId}', [MedicalForm::class, 'index'])->name('medical-forms.show');
 Route::post('/medical-forms/update', [MedicalForm::class, 'update'])->name('medical-forms.update');
 Route::post('/medical-forms/finishUpdate', [MedicalForm::class, 'finishUpdate'])->name('medical-forms.finishUpdate');
 
 
-Route::prefix('webapi')->name('api.')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
-
-    Route::get('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'index'])->name('treatment.list');
-    Route::post('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'store'])->name('treatment.store');
-
-    Route::get('/hospitals', [App\Http\Controllers\API\HospitalController::class, 'index'])->name('hospital.list');
-    Route::post('/hospitals', [App\Http\Controllers\API\HospitalController::class, 'store'])->name('hospital.store');
-
-    Route::get('/users', [App\Http\Controllers\API\UserController::class, 'index'])->name('user.list');
-    Route::post('/users', [App\Http\Controllers\API\UserController::class, 'store'])->name('user.store');
-
-    //doctors
-    Route::post('doctors', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
-
-    //inquiries
-    Route::get('/inquiries/waiting', [App\Http\Controllers\API\InquiryController::class, 'waiting'])->name('inquiries.waiting');
-
-});
+//Route::prefix('webapi')->name('api.')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
+//
+//    Route::get('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'index'])->name('treatment.list');
+//    Route::post('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'store'])->name('treatment.store');
+//
+//    Route::get('/hospitals', [App\Http\Controllers\API\HospitalController::class, 'index'])->name('hospital.list');
+//    Route::post('/hospitals', [App\Http\Controllers\API\HospitalController::class, 'store'])->name('hospital.store');
+//
+//    Route::get('/users', [App\Http\Controllers\API\UserController::class, 'index'])->name('user.list');
+//    Route::post('/users', [App\Http\Controllers\API\UserController::class, 'store'])->name('user.store');
+//
+//    //doctors
+//    Route::post('doctors', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
+//
+//    //inquiries
+//    Route::get('/inquiries/waiting', [App\Http\Controllers\API\InquiryController::class, 'waiting'])->name('inquiries.waiting');
+//
+//});
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
@@ -75,6 +73,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/doctors', [App\Http\Controllers\Admin\DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctors/anaesthetist', [App\Http\Controllers\Admin\DoctorController::class, 'anaesthetist'])->name('doctors.anaesthetist');
     Route::post('/doctors/send-anaesthetist', [App\Http\Controllers\Admin\DoctorController::class, 'sendingAnaesthetist'])->name('doctors.send_to_anaesthesia');
+
 
     //inquaries
     Route::get('/inquiries/waiting', [InquiryController::class, 'waiting'])->name('inquiries.waiting');
@@ -92,6 +91,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/inquiries/get-inquiry-message-template', [InquiryController::class, 'getInquiryMessageTemplate'])->name('inquiries.get-inquiry-message-template');
     Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'send_with_whatsapp'])->name('inquiries.send_to_whatsapp');
 
+    Route::get('/inquiries/view-medical-form/{formId}', [InquiryController::class, 'viewMedicalForm'])->name('inquiries.view-medical-form');
+    Route::post('/inquiries/save-notes', [InquiryController::class, 'saveNotes'])->name('inquiries.save-notes');
+    Route::post('/inquiries/get-notes', [InquiryController::class, 'getNotes'])->name('inquiries.get-notes');
+
     //
     Route::get('/inquiries/anaesthetist', [InquiryController::class, 'anaesthetist'])->name('inquiries.anaesthetist');
     Route::post('/inquiries/filter-anaesthetist', [InquiryController::class, 'anaesthetist_filter'])->name('inquiries.anaesthetistFilter');
@@ -104,7 +107,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/medical-forms/import', [MedicalFormController::class, 'import'])->name('medical-forms.import');
     Route::post('/medical-forms/import', [MedicalFormController::class, 'importStore'])->name('medical-forms.importStore');
     Route::get('/medical-forms/export/{formId}', [MedicalFormController::class, 'export'])->name('medical-forms.export');
-    Route::get('/medical-forms/show/{formId}', [MedicalFormController::class, 'show'])->name('medical-forms.show');
+
 
     Route::resources([
         'roles' => RoleController::class,
@@ -119,4 +122,18 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         'languages' => LanguageController::class,
         'message-template' => MessageTemplateController::class,
     ]);
+});
+
+Route::prefix('api')->name('api.admin.')->group(function () {
+
+    // Login Route (No auth required)
+    Route::post('/login', [App\Http\Controllers\API\Users\LoginController::class, 'login'])->name('users.login');
+
+    // Protected Routes
+    Route::middleware('auth:sanctum')->group(function () {
+
+        Route::apiResource('users', App\Http\Controllers\API\Users\UserController::class);
+        Route::apiResource('doctors', App\Http\Controllers\API\DoctorController::class);
+        Route::get('/doctors/get', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
+    });
 });

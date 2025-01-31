@@ -181,7 +181,7 @@
             $(document).on('click', '.show_medical_form', function(e) {
                 e.preventDefault();
                 let id = $(this).data('id');
-                let url = '{{ route('admin.medical-forms.show', ':id') }}'.replace(':id', id);
+                let url = '{{ route('admin.inquiries.view-medical-form', ':id') }}'.replace(':id', id);
 
                 //redirect to medical form
                 window.open(url, '_blank').focus();
@@ -190,4 +190,3 @@
         });
     </script>
 @endpush
-

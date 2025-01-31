@@ -28,24 +28,26 @@
                     </ul>
                 </div>
                 <div class="card-body">
-                    <table id="datatable" class="table dt-responsive nowrap w-100">
-                        <thead>
-                        <tr>
-                            <th>{{ __('Actions') }}</th>
-                            <th>{{ __('ID') }}</th>
-                            <th>{{ __('Name Surname') }}</th>
-                            <th>{{ __('Treatment') }}</th>
-                            <th>{{ __('Country') }}</th>
-                            <th>{{ __('Status') }}</th>
-                            <th>{{ __('Coordinator') }}</th>
-                            <th>{{ __('Registration Date') }}</th>
-                            <th>{{ __('Email Address') }}</th>
-                            <th>{{ __('Phone Number') }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="responsible">
+                        <table id="datatable" class="table dt-responsive nowrap w-100">
+                            <thead>
+                            <tr>
+                                <th>{{ __('Actions') }}</th>
+                                <th>{{ __('ID') }}</th>
+                                <th>{{ __('Name Surname') }}</th>
+                                <th>{{ __('Treatment') }}</th>
+                                <th>{{ __('Country') }}</th>
+                                <th>{{ __('Status') }}</th>
+                                <th>{{ __('Coordinator') }}</th>
+                                <th>{{ __('Registration Date') }}</th>
+                                <th>{{ __('Email Address') }}</th>
+                                <th>{{ __('Phone Number') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -272,6 +274,13 @@
                             data: 'status',
                             render : function (row, type, data) {
                                 return '<span class="badge badge-soft-success">'+ row +'</span>';
+                            }
+                        },
+                        {
+                            targets: 4,
+                            data: 'country',
+                            render : function (row, type, data) {
+                                return row.length > 15 ? row.slice(0, 15)+'...' : row;
                             }
                         }
                     ]
@@ -546,7 +555,7 @@
                 var id = $(this).data('id');
                 $('h4.modal-title').text('Send to Anaesthesia');
 
-                $.post('{{ route('api.doctors.get') }}', {
+                $.post('{{ route('api.admin.doctors.get') }}', {
                     id: id,
                     _token : '{{ csrf_token() }}',
                     _method: 'POST',

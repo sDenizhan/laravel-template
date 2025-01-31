@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class MedicalFormController extends Controller
 {
     public function index(Request $request, ?string $formId)
-    {
+    {   
         $patientAnswers = MedicalFormPatientAnswers::where(['code' => $formId])->first();
 
         if (!$patientAnswers) {
@@ -41,7 +41,7 @@ class MedicalFormController extends Controller
             return __('The form you are looking for could not be found..!');
         }
 
-        return view('medical-forms.show', compact('form', 'patientAnswers'));
+        return view('themes.frontend.default.medical-forms.show', compact('form', 'patientAnswers'));
     }
 
     public function update(Request $request) {

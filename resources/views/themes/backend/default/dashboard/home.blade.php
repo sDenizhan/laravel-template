@@ -7,68 +7,70 @@
 @section('content')
 
     <div class="row">
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
+        <div class="col-md-6 col-xl-3">
+            <div class="card" id="tooltip-container">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="avatar-sm bg-blue rounded">
-                                <i class="fe-aperture avatar-title font-22 text-white"></i>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-end">
-                                <h3 class="text-dark my-1"><span data-plugin="counterup">1500</span></h3>
-                                <p class="text-muted mb-1 text-truncate">{{ __('Total Inquiries') }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <i class="fa fa-info-circle text-muted float-end" data-bs-container="#tooltip-container" data-bs-toggle="tooltip" data-bs-placement="bottom" title="More Info"></i>
+                    <h4 class="mt-0 font-16">Facebook / <small class="text-danger">Monthly</small></h4>
+                    <h2 class="text-primary my-3 text-center">
+                        <span data-plugin="counterup">900</span> <small class="text-danger"> / total number of inquiry</small>
+                    </h2>
+                    <p class="text-muted mb-0">This Month Approved: <span class="text-dark">500</span> <span class="float-end"><i class="fa fa-caret-down text-danger me-1"></i>16.67%</span></p>
+                    <p class="text-muted mb-0">Last Month Inquiry: <span class="text-dark">700</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>28.57%</span></p>
+                    <p class="text-muted mb-0">Last Month Approved: <span class="text-dark">600</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>10.25%</span></p>
                 </div>
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+            </div>
+        </div>
 
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
+        <div class="col-md-6 col-xl-3">
+            <div class="card" id="tooltip-container1">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="avatar-sm bg-success rounded">
-                                <i class="fe-cpu avatar-title font-22 text-white"></i>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-end">
-                                <h3 class="text-dark my-1"><span data-plugin="counterup">1340</span></h3>
-                                <p class="text-muted mb-1 text-truncate">{{ __('Total Form Received Inquiries') }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    <i class="fa fa-info-circle text-muted float-end" data-bs-container="#tooltip-container1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="More Info"></i>
+                    <h4 class="mt-0 font-16">Google / <small class="text-danger">Monthly</small></h4>
+                    <h2 class="text-primary my-3 text-center">
+                        <span data-plugin="counterup">683</span> <small class="text-danger"> / total number of inquiry</small>
+                    </h2>
+                    <p class="text-muted mb-0">This Month Approved: <span class="text-dark">535</span> <span class="float-end"><i class="fa fa-caret-down text-danger me-1"></i>2.73%</span></p>
+                    <p class="text-muted mb-0">Last Month Inquiry: <span class="text-dark">650</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>5.08%</span></p>
+                    <p class="text-muted mb-0">Last Month Approved: <span class="text-dark">550</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>5.23%</span></p>
                 </div>
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+            </div>
+        </div>
 
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
+        <div class="col-md-6 col-xl-3">
+            <div class="card" id="tooltip-container2">
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="avatar-sm bg-warning rounded">
-                                <i class="fe-bar-chart-2 avatar-title font-22 text-white"></i>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-end">
-                                <h3 class="text-dark my-1"><span data-plugin="counterup">130</span></h3>
-                                <p class="text-muted mb-1 text-truncate">{{ __('Total Inquiries For Today') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- end card-->
-        </div> <!-- end col -->
+                    <i class="fa fa-info-circle text-muted float-end" data-bs-container="#tooltip-container2" data-bs-toggle="tooltip" data-bs-placement="bottom" title="More Info"></i>
+                    <h4 class="mt-0 font-16">Channel (site) / <small class="text-danger">Monthly</small></h4>
+                    <h2 class="text-primary my-3 text-center">
+                        <span data-plugin="counterup">534</span> <small class="text-danger"> / total number of inquiry</small>
+                    </h2>
 
-    </div>
-    <!-- end row -->
+                    <p class="text-muted mb-0">This Month Approved: <span class="text-dark">485</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>21.25%</span></p>
+                    <p class="text-muted mb-0">Last Month Inquiry: <span class="text-dark">452</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>18.14%</span></p>
+                    <p class="text-muted mb-0">Last Month Approved: <span class="text-dark">400</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>3.55%</span></p>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card" id="tooltip-container3">
+                <div class="card-body">
+                    <i class="fa fa-info-circle text-muted float-end" data-bs-container="#tooltip-container3" data-bs-toggle="tooltip" data-bs-placement="bottom" title="More Info"></i>
+                    <h4 class="mt-0 font-16">Total / <small class="text-danger">Monthly</small></h4>
+                    <h2 class="text-primary my-3 text-center">
+                        <span data-plugin="counterup">2117</span> <small class="text-danger"> / total number of inquiry</small>
+                    </h2>
+
+                    <p class="text-muted mb-0">This Month Approved: <span class="text-dark">1520</span> <span class="float-end"><i class="fa fa-caret-down text-danger me-1"></i>1.94%</span></p>
+                    <p class="text-muted mb-0">Last Month Inquiry: <span class="text-dark">1802</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>17.48%</span></p>
+                    <p class="text-muted mb-0">Last Month Approved: <span class="text-dark">1550</span> <span class="float-end"><i class="fa fa-caret-up text-success me-1"></i>8.25%</span></p>
+
+                </div>
+            </div>
+        </div>
+    </div> <!-- end row -->
 
     <div class="row">
         <div class="col-xl-6 col-md-12">
@@ -99,7 +101,7 @@
                         <a data-bs-toggle="collapse" href="#cardCollpase2" role="button" aria-expanded="false" aria-controls="cardCollpase2"><i class="mdi mdi-minus"></i></a>
                         <a href="javascript: void(0);" data-bs-toggle="remove"><i class="mdi mdi-close"></i></a>
                     </div>
-                    <h4 class="header-title mb-0">{{ __('Inquiries & Form Received') }}</h4>
+                    <h4 class="header-title mb-0">{{ __('Form Received - Planned / Monthly') }}</h4>
 
                     <div id="cardCollpase2" class="collapse show">
                         <div class="text-center pt-3">
@@ -209,12 +211,12 @@
             var options = {
                 series: [
                     {
-                        name: "Inquiries",
-                        data: [28, 29, 33, 36, 32, 32, 33]
+                        name: "Form Received",
+                        data: [248, 219, 330, 346, 312, 322, 333]
                     },
                     {
-                        name: "Form Received",
-                        data: [12, 11, 14, 18, 17, 13, 13]
+                        name: "Planned",
+                        data: [210, 190, 304, 318, 267, 293, 273]
                     }
                 ],
                 chart: {
@@ -264,10 +266,10 @@
                 },
                 yaxis: {
                     title: {
-                        text: 'Inquiries'
+                        text: 'Form Received / Planned'
                     },
                     min: 5,
-                    max: 40
+                    max: 500
                 },
                 legend: {
                     position: 'top',
@@ -285,6 +287,9 @@
                 series: [{
                     name: "Inquiries",
                     data: [10, 41, 35, 51, 49, 62, 69, 91, 148, 100, 134, 200]
+                }, {
+                    name: "Approved",
+                    data: [9, 23, 24, 32, 35, 41, 48, 59, 74, 91, 108, 130]
                 }],
                 chart: {
                     height: 350,

@@ -18,9 +18,11 @@ class PermissionSeeder extends Seeder
             'create-role',
             'edit-role',
             'delete-role',
+            'view-role',
             'create-user',
             'edit-user',
             'delete-user',
+            'view-user',
             //inquiry
             'create-inquiry',
             'edit-inquiry',

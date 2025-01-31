@@ -7,10 +7,13 @@ use App\Events\InquiryStoredEvent;
 use App\Events\MedicalFormSentEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InquiryStoreRequest;
+use App\Http\Requests\StoreMedicalFormNotes;
+use App\Http\Requests\StoreMedicalFormRequest;
 use App\Models\DoctorHasInquiry;
 use App\Models\Inquiry;
 use App\Models\Language;
 use App\Models\MedicalForm;
+use App\Models\MedicalFormNotes;
 use App\Models\MedicalFormPatientAnswers;
 use App\Models\MessageTemplate;
 use App\Models\Treatments;
@@ -197,8 +200,12 @@ class InquiryController extends Controller
         return response()->json($json_data);
     }
 
-    public function anaesthetist(): \Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+    public function anaesthetist(): \Illuminate\Http\RedirectResponse
     {
+        if ( !auth()->user()->hasPermissionTo('view-anaesthetist-inquiries') ) {
+            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view this page!');
+        }
+
         return view('inquiry.anaesthetist');
     }
 
@@ -509,6 +516,55 @@ class InquiryController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function saveNotes(StoreMedicalFormNotes $request): \Illuminate\Http\JsonResponse
+    {
+        $validated = $request->validated();
+        $medicalForm = MedicalFormPatientAnswers::find($validated['answer_id']);
+
+        if (!$medicalForm) {
+            return response()->json(['status' => 'error', 'message' => 'Medical form not found']);
+        }
+
+        $medicalFormNote = MedicalFormNotes::create([
+            'inquiry_id' => $validated['inquiry_id'],
+            'medical_form_id' => $validated['answer_id'],
+            'user_id' => $validated['user_id'],
+            'note' => $validated['notes']
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Notes updated successfully']);
+    }
+
+    public function getNotes(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validated = \Validator::make($request->all(), [
+            'inquiry_id' => 'required|exists:inquiries,id',
+            'medical_form_id' => 'required'
+        ]);
+
+        if ($validated->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validated->errors()->first()]);
+        }
+
+        $validated = (object) $validated->validated();
+
+        $notes = MedicalFormNotes::with('user')->where([
+            'inquiry_id' => $validated->inquiry_id,
+            'medical_form_id' => $validated->medical_form_id
+        ])->get();
+
+        if ($notes->count() == 0) {
+            return response()->json(['status' => 'error', 'message' => 'Notes not found']);
+        }
+
+        $view = view('components.backend.medical-forms.list-notes', compact('notes'))->render();
+
+        return response()->json(['status' => 'success', 'html' => $view]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
@@ -530,5 +586,37 @@ class InquiryController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    //view medical form
+    public function viewMedicalForm(Request $request, ?int $formId = null)
+    {
+        if ( !$formId ) {
+            return redirect()->route('admin.dashboard')->with('error', 'Invalid request!');
+        }
+
+        $medicalForm = MedicalFormPatientAnswers::where(['inquiry_id' => $formId])->first();
+
+        if (!$medicalForm) {
+            return redirect()->route('admin.dashboard')->with('error', 'Medical form not found!');
+        }
+
+        //doctor check
+        if ( !auth()->user()->hasRole('Super Admin') ) {
+            $doctorHasInquiry = DoctorHasInquiry::where(['doctor_id' => auth()->id(), 'inquiry_id' => $formId])->first();
+            if (!$doctorHasInquiry) {
+                return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view this form!');
+            }
+        }
+
+        //coordinator check
+        if ( auth()->user()->hasRole('Coordinator') ) {
+            $inquiry = Inquiry::find($formId);
+            if ($inquiry->assignment_to != auth()->id()) {
+                return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view this form!');
+            }
+        }
+
+        return view('inquiry.view-medical-form', compact('medicalForm'));
     }
 }

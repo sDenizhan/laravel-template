@@ -27,7 +27,7 @@ class DashboardController extends Controller
         $userInquiries = Inquiry::with(['coordinator'])->where('status', '>=', InquiryStatus::APPROVED->value);
 
         if ( auth()->user()->hasRole('Coordinator') ) {
-            $userInquiries->where('assigment_to', auth()->user()->id);
+            $userInquiries->where('assignment_to', auth()->user()->id);
         }
 
         $userInquiries = $userInquiries->latest()->limit(10)->get();

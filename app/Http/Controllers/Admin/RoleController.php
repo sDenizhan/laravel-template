@@ -76,9 +76,9 @@ class RoleController extends Controller
      */
     public function edit(Role $role): View
     {
-        if($role->name=='Super Admin'){
-            abort(403, 'SUPER ADMIN ROLE CAN NOT BE EDITED');
-        }
+//        if($role->name=='Super Admin'){
+//            abort(403, 'SUPER ADMIN ROLE CAN NOT BE EDITED');
+//        }
 
         $rolePermissions = DB::table("role_has_permissions")->where("role_id",$role->id)
             ->pluck('permission_id')

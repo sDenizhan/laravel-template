@@ -15,5 +15,9 @@ class MedicalFormPatientAnswers extends Model
         'answers' => 'array'
     ];
 
+    public function medicalform()
+    {
+        return $this->belongsTo(MedicalForm::class, 'medical_form_id');
+    }
 
 }

@@ -241,6 +241,23 @@
                             @endcan
 
                             <li class="menu-item">
+                                <a href="#menuMedicalMessages" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                    <span class="menu-text"> {{ __('Medical Messages')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+                                <div class="collapse" id="menuMedicalMessages">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.message-template.index') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Message Templates') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                            <li class="menu-item">
                                 <a href="#menuUsers" data-bs-toggle="collapse" class="menu-link">
                                     <span class="menu-icon"><i data-feather="users"></i></span>
                                     <span class="menu-text"> {{ __('Users')  }}</span>

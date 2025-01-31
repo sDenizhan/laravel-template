@@ -17,5 +17,5 @@
 @endsection
 
 @section('content')
-    @dd($form)
+    @dd($medicalForm)
 @endsection
