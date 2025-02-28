@@ -22,15 +22,20 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $latest = Inquiry::with(['coordinator'])->orderBy('created_at', 'desc')->limit(10)->latest()->get();
+        if ( auth()->user()->hasRole('Super Admin') ) {
+            $latest = Inquiry::with(['coordinator'])->orderBy('created_at', 'desc')->limit(10)->latest()->get();
 
-        $userInquiries = Inquiry::with(['coordinator'])->where('status', '>=', InquiryStatus::APPROVED->value);
+            $userInquiries = Inquiry::with(['coordinator'])->where('status', '>=', InquiryStatus::APPROVED->value);
 
-        if ( auth()->user()->hasRole('Coordinator') ) {
-            $userInquiries->where('assignment_to', auth()->user()->id);
+            if ( auth()->user()->hasRole('Coordinator') ) {
+                $userInquiries->where('assignment_to', auth()->user()->id);
+            }
+
+            $userInquiries = $userInquiries->latest()->limit(10)->get();
+        } else {
+            $latest = [];
+            $userInquiries = [];
         }
-
-        $userInquiries = $userInquiries->latest()->limit(10)->get();
 
         return view('dashboard.home', compact('latest', 'userInquiries'));
     }

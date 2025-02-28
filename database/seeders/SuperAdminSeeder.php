@@ -82,13 +82,13 @@ class SuperAdminSeeder extends Seeder
         $coordinators = [
             [
                 'name' => 'Koordinator 1',
-                'email' => 'koordinator@bookings.com',
-                'password' => Hash::make('koordinator1234')
+                'email' => 'koordinator@bookingsurgery.com',
+                'password' => Hash::make('koordinator12345')
             ],
             [
                 'name' => 'Koordinator 2',
-                'email' => 'koordinator2@bookgins.com',
-                'password' => Hash::make('koordinator21234')
+                'email' => 'koordinator2@bookingsurgery.com',
+                'password' => Hash::make('koordinator12345')
             ],
         ];
 

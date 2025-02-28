@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\MedicalFormController as MedicalForm;
+use App\Http\Controllers\Admin\ReportsController;
+use App\Http\Controllers\Admin\CalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,21 +30,33 @@ use App\Http\Controllers\MedicalFormController as MedicalForm;
 */
 
 Route::get('/test', function () {
-    $user = \App\Models\User::find(1);
-    $user->givePermissionTo(\App\Models\Permission::pluck('name')->toArray());
+    $countries = json_decode(file_get_contents('https://restcountries.com/v3.1/all'), true);
 
-    dd();
+    $countriesArray = [];
+
+    foreach ($countries as $country) {
+        $countriesArray[] = [
+            "name" => $country["translations"]["tur"]["common"] ?? $country["name"]["common"],
+            "code" => $country["cca2"],
+            "alpha3" => $country["cca3"],
+            "phone_code" => isset($country["idd"]["root"]) ? $country["idd"]["root"] . ((isset($country["idd"]["suffixes"]) & count($country["idd"]["suffixes"]) < 2) ? implode('', $country["idd"]["suffixes"]) : '') : ''
+        ];
+    }
+
+    print_r($countriesArray);
 });
 
-//Route::get('/', function () {
-//    return redirect()->route('admin.dashboard');
-//});
+Route::get('/', function () {
+   return redirect()->route('admin.dashboard');
+});
 
 Auth::routes();
 
 Route::get('/medical-forms/view/{formId}', [MedicalForm::class, 'index'])->name('medical-forms.show');
 Route::post('/medical-forms/update', [MedicalForm::class, 'update'])->name('medical-forms.update');
 Route::post('/medical-forms/finishUpdate', [MedicalForm::class, 'finishUpdate'])->name('medical-forms.finishUpdate');
+
+Route::post('/inquiry/send', [App\Http\Controllers\API\InquiryController::class, 'store'])->name('inquiry.send');
 
 
 //Route::prefix('webapi')->name('api.')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
@@ -73,6 +87,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/doctors', [App\Http\Controllers\Admin\DoctorController::class, 'index'])->name('doctors.index');
     Route::get('/doctors/anaesthetist', [App\Http\Controllers\Admin\DoctorController::class, 'anaesthetist'])->name('doctors.anaesthetist');
     Route::post('/doctors/send-anaesthetist', [App\Http\Controllers\Admin\DoctorController::class, 'sendingAnaesthetist'])->name('doctors.send_to_anaesthesia');
+    Route::post('/doctors/send-doctor', [App\Http\Controllers\Admin\DoctorController::class, 'sendingDoctor'])->name('doctors.send_to_doctor');
 
 
     //inquaries
@@ -95,9 +110,21 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/inquiries/save-notes', [InquiryController::class, 'saveNotes'])->name('inquiries.save-notes');
     Route::post('/inquiries/get-notes', [InquiryController::class, 'getNotes'])->name('inquiries.get-notes');
 
+    //make treatment schedule
+    Route::get('/inquiries/make-treatment-schedule/{inquiryId}', [InquiryController::class, 'makeTreatmentSchedule'])->name('inquiries.make-schedule');
+    Route::post('/inquiries/save-treatment-schedule', [InquiryController::class, 'saveTreatmentSchedule'])->name('inquiries.treatment.store');
+
     //
     Route::get('/inquiries/anaesthetist', [InquiryController::class, 'anaesthetist'])->name('inquiries.anaesthetist');
     Route::post('/inquiries/filter-anaesthetist', [InquiryController::class, 'anaesthetist_filter'])->name('inquiries.anaesthetistFilter');
+
+    //doctors
+    Route::get('/inquiries/doctors', [InquiryController::class, 'doctors'])->name('inquiries.doctors');
+    Route::post('/inquiries/filter-doctors', [InquiryController::class, 'doctors_filter'])->name('inquiries.doctorFilters');
+
+    //completed
+    Route::get('/inquiries/completed', [InquiryController::class, 'completed'])->name('inquiries.completed');
+    Route::post('/inquiries/filter-completed', [InquiryController::class, 'completed_filters'])->name('inquiries.completedFilters');
 
     //medical-forms-questions
     Route::get('/medical-form-questions/add-question/{formId}', [MedicalFormQuestionController::class, 'addQuestion'])->name('medical-form-questions.add-question');
@@ -107,6 +134,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/medical-forms/import', [MedicalFormController::class, 'import'])->name('medical-forms.import');
     Route::post('/medical-forms/import', [MedicalFormController::class, 'importStore'])->name('medical-forms.importStore');
     Route::get('/medical-forms/export/{formId}', [MedicalFormController::class, 'export'])->name('medical-forms.export');
+    Route::post('/medical-form-questions/destroy-question/{formId}', [MedicalFormQuestionController::class, 'destroy'])->name('medical-form-questions.delete-question');
 
 
     Route::resources([
@@ -122,18 +150,36 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         'languages' => LanguageController::class,
         'message-template' => MessageTemplateController::class,
     ]);
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/applications', [ReportsController::class, 'applications'])->name('applications');
+        Route::get('/coordinators', [ReportsController::class, 'coordinators'])->name('coordinators');
+        Route::get('/finance', [ReportsController::class, 'finance'])->name('finance');
+    });
+
+    Route::prefix('calendar')->name('calendar.')->group(function () {
+        Route::get('/', [CalendarController::class, 'index'])->name('index');
+        Route::get('/events', [CalendarController::class, 'getEvents'])->name('events');
+        Route::post('/store', [CalendarController::class, 'store'])->name('store');
+        Route::put('/update/{calendar}', [CalendarController::class, 'update'])->name('update');
+        Route::delete('/destroy/{calendar}', [CalendarController::class, 'destroy'])->name('destroy');
+    });
 });
 
 Route::prefix('api')->name('api.admin.')->group(function () {
 
     // Login Route (No auth required)
     Route::post('/login', [App\Http\Controllers\API\Users\LoginController::class, 'login'])->name('users.login');
+    Route::post('/inquiry/save', [App\Http\Controllers\API\Inquiries\InquiriesController::class, 'store'])->name('inquiry.save');
 
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
-
         Route::apiResource('users', App\Http\Controllers\API\Users\UserController::class);
-        Route::apiResource('doctors', App\Http\Controllers\API\DoctorController::class);
+        //Route::apiResource('doctors', App\Http\Controllers\API\DoctorController::class);
+        Route::apiResource('hospitals', App\Http\Controllers\API\Hospitals\HospitalController::class);
+
+
         Route::get('/doctors/get', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
+        Route::post('/medical-form-sending-with-email', [App\Http\Controllers\API\EmailController::class, 'medicalFormSendingWithEmail'])->name('emails.medical-form-sending-with-email');
     });
 });

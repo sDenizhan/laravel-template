@@ -17,9 +17,49 @@
                             @foreach($form->steps as $stepNo => $stepTitle)
                                 <h3>{{ $stepTitle }}</h3>
                                 <section>
+
+                                    @if ( $stepNo == 1 && $form->settings['calculateBMI'] == "yes")
+                                        <div class="mt-3">
+                                            <h5 class="page-title">{{ __('BMI Calculator') }}</h5>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">{{ __('Height (cm)') }}</label>
+                                                        <input type="number" class="form-control" id="height" name="height" min="1" max="300">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="form-label">{{ __('Weight (kg)') }}</label>
+                                                        <input type="number" class="form-control" id="weight" name="weight" min="1" max="500">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="alert alert-info" id="bmiResult" style="display: none;">
+                                                        <strong>{{ __('Your BMI') }}: </strong> <span id="bmiValue"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="bmi_result" id="bmi_result">
+                                        <input type="hidden" name="bmi_category" id="bmi_category">
+                                    @endif
+
+                                    @if ( $stepNo == 1 && $form->settings['emergencyContactName'] == "yes")
+                                        <div class="mt-3">
+                                            <h5 class="page-title">{{ __('Emergency Contact Data') }} </h5>
+                                        </div>
+                                        <x-html.forms.text name="emergencyContactName" label="Name Surname" required="yes" name="emergencyContactName" id="question_99991" />
+                                        <x-html.forms.text name="emergencyContactRelationship" label="Relationship" required="yes" name="emergencyContactRelationship" id="question_99992" />
+                                        <x-html.forms.text name="emergencyContactPhone" label="Phone Number" required="yes" name="emergencyContactPhone" id="question_99993" />
+                                        <x-html.forms.text name="emergencyContactEmail" label="Email Address" required="yes" name="emergencyContactEmail" id="question_99994" />
+                                        <x-html.forms.text name="emergencyContactAddress" label="Address" name="emergencyContactAddress" id="question_99995" />
+                                    @endif
+
                                     @foreach($form->questions->filter(function ($query) use ($stepNo){
                                                             return $query->step == $stepNo;
                                                         }) as $question)
+
                                         @php($component = 'html.forms.'.$question->type)
 
                                         <x-dynamic-component :component="$component"
@@ -30,44 +70,6 @@
                                                              :required="$question->rules['isRequired']"
                                                              :data="$question->answers"
                                         />
-
-                                        @if ( $stepNo == 1 && $form->settings['calculateBMI'] == "yes")
-                                            <div class="mt-3">
-                                                <h5 class="page-title">{{ __('BMI Calculator') }}</h5>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">{{ __('Height (cm)') }}</label>
-                                                            <input type="number" class="form-control" id="height" name="height" min="1" max="300">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-3">
-                                                            <label class="form-label">{{ __('Weight (kg)') }}</label>
-                                                            <input type="number" class="form-control" id="weight" name="weight" min="1" max="500">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-                                                        <div class="alert alert-info" id="bmiResult" style="display: none;">
-                                                            <strong>{{ __('Your BMI') }}: </strong> <span id="bmiValue"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <input type="hidden" name="bmi_result" id="bmi_result">
-                                            <input type="hidden" name="bmi_category" id="bmi_category">
-                                        @endif
-
-                                        @if ( $stepNo == 1 && $form->settings['emergencyContactName'] == "yes")
-                                            <div class="mt-3">
-                                                <h5 class="page-title">{{ __('Emergency Contact Data') }} </h5>
-                                            </div>
-                                            <x-html.forms.text name="emergencyContactName" label="Name Surname" required="yes" name="emergencyContactName" id="question_99991" :value="$patientAnswers->answers[$question->id] ?? ''" />
-                                            <x-html.forms.text name="emergencyContactRelationship" label="Relationship" required="yes" name="emergencyContactRelationship" id="question_99992" :value="$patientAnswers->answers[$question->id] ?? ''" />
-                                            <x-html.forms.text name="emergencyContactPhone" label="Phone Number" required="yes" name="emergencyContactPhone" id="question_99993" :value="$patientAnswers->answers[$question->id] ?? ''" />
-                                            <x-html.forms.text name="emergencyContactEmail" label="Email Address" required="yes" name="emergencyContactEmail" id="question_99994" :value="$patientAnswers->answers[$question->id] ?? ''" />
-                                            <x-html.forms.text name="emergencyContactAddress" label="Address" name="emergencyContactAddress" id="question_99995" :value="$patientAnswers->answers[$question->id] ?? ''" />
-                                        @endif
                                     @endforeach
                                 </section>
                             @endforeach
@@ -127,6 +129,17 @@
         }
         .wizard > .content {
             transition: min-height 0.3s ease;
+            min-height: 100px;
+
+        }
+        .wizard .content > .body {
+            width: 100%;
+            height: auto;
+            padding: 15px;
+            position: absolute;
+        }
+        .wizard .content .body.current {
+            position: relative;
         }
     </style>
 @endpush
@@ -139,34 +152,34 @@
     <script>
         $(document).ready(function(){
             console.log('Script çalışıyor');
-            
+
             // Event delegation kullanarak BMI hesaplama
             $(document).on('change', '#height, #weight', function() {
                 var height = $('#height').val();
                 var weight = $('#weight').val();
-                
+
                 console.log('Height:', height);
                 console.log('Weight:', weight);
-                
+
                 if (height > 0 && weight > 0) {
                     var heightInMeters = height / 100;
                     var bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
-                    
+
                     var category = '';
                     if (bmi < 18.5) category = '{{ __("Underweight") }}';
                     else if (bmi < 25) category = '{{ __("Normal weight") }}';
                     else if (bmi < 30) category = '{{ __("Overweight") }}';
                     else category = '{{ __("Obese") }}';
-                    
+
                     // Görünür alanlara değerleri yazalım
                     $('#bmiValue').text(bmi);
                     $('#bmiCategory').text(category);
                     $('#bmiResult').show();
-                    
+
                     // Hidden input'lara değerleri yazalım
                     $('#bmi_result').val(bmi);
                     $('#bmi_category').val(category);
-                    
+
                     console.log('BMI calculated:', bmi);
                     console.log('Category:', category);
                 }
@@ -176,6 +189,7 @@
             function adjustWizardHeight(stepIndex) {
                 var currentStep = $('#basicwizard').find('section').eq(stepIndex);
                 var stepHeight = currentStep.outerHeight();
+                console.log('Step height:', stepHeight);
                 currentStep.css('min-height', stepHeight);
                 $('.content').css('min-height', stepHeight + 100);
             }
@@ -197,7 +211,7 @@
                     if (currentIndex > newIndex) {
                         return true;
                     }
-                    
+
                     // Mevcut adımdaki tüm required alanları kontrol et
                     var currentStep = $(this).find('section').eq(currentIndex);
                     var isValid = true;
@@ -227,9 +241,9 @@
                         var currentContent = currentStep.find('.content');
                         var newHeight = currentStep.outerHeight();
                         currentStep.css('min-height', newHeight + 50); // 50px extra space
-                        
+
                         firstInvalidField.focus();
-                        
+
                         Swal.fire({
                             title: '{{ __("Warning") }}',
                             text: '{{ __("Please fill in all required fields") }}',

@@ -6,6 +6,8 @@
 
 @section('content')
 
+    @if ( auth()->user()->hasRole('Super Admin') )
+
     <div class="row">
         <div class="col-md-6 col-xl-3">
             <div class="card" id="tooltip-container">
@@ -196,7 +198,9 @@
             </div> <!-- end card-->
         </div> <!-- end col -->
 
-    </div>
+        </div>
+    @endif
+
 @endsection
 
 @push('scripts')

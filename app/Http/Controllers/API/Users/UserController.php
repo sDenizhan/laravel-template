@@ -27,8 +27,6 @@ class UserController
     {
         $user = $this->userService->store($request->validated());
         return new UserResource($user);
-
-
     }
 
     public function show($id)

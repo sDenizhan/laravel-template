@@ -15,7 +15,6 @@
     </div>
     <input type="hidden" name="id" value="{{ $inquiry->id }}"  />
     <input type="hidden" name="userId" value="{{ $user->id }}" />
-    <input type="hidden" name="newPassword" value="{{ $newPassword }}" />
     <input type="hidden" name="formHash" value="{{ $formHash  }}" />
     <input type="hidden" name="medicalFormId" value="{{ $medicalForm->id }}" />
 </div>

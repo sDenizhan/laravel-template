@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InquiryStoreRequest;
 use App\Http\Requests\StoreMedicalFormNotes;
 use App\Http\Requests\StoreMedicalFormRequest;
+use App\Models\Calendar;
 use App\Models\DoctorHasInquiry;
 use App\Models\Inquiry;
 use App\Models\Language;
@@ -24,6 +25,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use LaravelLang\Publisher\Concerns\Has;
+use Yajra\DataTables\Facades\DataTables;
 
 class InquiryController extends Controller
 {
@@ -122,7 +124,7 @@ class InquiryController extends Controller
 
     public function approved_filter(Request $request) : \Illuminate\Http\JsonResponse
     {
-        $columns = ['id', 'name_surname', 'treatment', 'country', 'status', 'coordinator', 'registration_date'];
+        $columns = ['actions', 'id', 'name_surname', 'treatment', 'country', 'status', 'coordinator', 'created_at', 'email', 'phone'];
 
         // Sıralama ve sayfalama parametreleri
         $limit = $request->input('length');
@@ -166,7 +168,12 @@ class InquiryController extends Controller
         //sıralama ve sayfalama
         $inquiries = $query->offset($start)
             ->limit($limit)
-            ->orderBy($order, $dir)
+            ->when($order == 'treatment', function ($query) use ($dir) {
+                return $query->orderBy('treatment_id', $dir);
+            })
+            ->when($order != 'treatment', function ($query) use ($order, $dir) {
+                return $query->orderBy($order, $dir);
+            })
             ->get();
 
         //data
@@ -200,9 +207,9 @@ class InquiryController extends Controller
         return response()->json($json_data);
     }
 
-    public function anaesthetist(): \Illuminate\Http\RedirectResponse
+    public function anaesthetist()
     {
-        if ( !auth()->user()->hasPermissionTo('view-anaesthetist-inquiries') ) {
+        if ( !auth()->user()->hasPermissionTo('view-anaesthetist-inquiries') && !auth()->user()->hasRole('Super Admin') ) {
             return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view this page!');
         }
 
@@ -285,6 +292,221 @@ class InquiryController extends Controller
         ];
 
         return response()->json($json_data);
+    }
+
+    //doctors
+    public function doctors()
+    {
+        if ( !auth()->user()->hasPermissionTo('doctor-can-view-inquiry') && !auth()->user()->hasRole('Super Admin') ) {
+            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view this page!');
+        }
+
+        return view('inquiry.doctors');
+    }
+
+    public function doctors_filter(Request $request) : \Illuminate\Http\JsonResponse
+    {
+        $columns = ['id', 'name_surname', 'treatment', 'country', 'status', 'coordinator', 'registration_date'];
+
+        // Sıralama ve sayfalama parametreleri
+        $limit = $request->input('length');
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+        $status = InquiryStatus::DOCTOR_SENT->value;
+
+        // Filtreleme
+        $search = $request->input('search.value');
+
+        //main query
+        $query = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '=', $status);
+
+        //search
+        if ( !empty($search) ) {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('surname', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhere('phone', 'like', '%'.$search.'%')
+                ->orWhere('country', 'like', '%'.$search.'%')
+                ->orWhereHas('treatment', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                });
+        }
+
+        //toplam data
+        $totalFiltered = $query->count();
+        $totalData = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '=', $status)->count();
+
+        //sıralama ve sayfalama
+        $inquiries = $query->offset($start)
+            ->limit($limit)
+            ->orderBy($order, $dir)
+            ->get();
+
+        //data
+        $data = [];
+        foreach ($inquiries as $inquiry) {
+            $nestedData = [
+                'id' => $inquiry->id,
+                'name_surname' => maskWord($inquiry->name) . ' ' . maskWord($inquiry->surname),
+                'coordinator' => $inquiry->coordinator->name ?? '-',
+                'registration_date' => $inquiry->created_at->format('d.m.Y H:i'),
+                'treatment' => $inquiry->treatment->name,
+                'country' => $inquiry->country,
+                'status' => __(\App\Enums\InquiryStatus::from($inquiry->status)->getLabel() ),
+                'status_id' => $inquiry->status,
+                'code' => $inquiry->answers->code ?? '',
+                'medical_form_link' => route('medical-forms.show', $inquiry->answers->code) ?? '',
+                'action' => ''
+            ];
+            $data[] = $nestedData;
+        }
+
+        $json_data = [
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data" => auth()->user()->hasRole('Super Admin') ? $data : collect($data)->filter(function ($item) {
+
+                $inquiry = DoctorHasInquiry::where(['doctor_id' => auth()->id()])->first() ?? null;
+
+                if (!$inquiry) {
+                    return false;
+                }
+
+                return $inquiry->inquiry_id == $item['id'];
+
+            })->values()
+        ];
+
+        return response()->json($json_data);
+    }
+
+
+    //completed
+    public function completed()
+    {
+        if ( !auth()->user()->hasPermissionTo('view-completed-inquiries') && !auth()->user()->hasRole('Super Admin') ) {
+            return redirect()->route('admin.dashboard')->with('error', 'You are not authorized to view this page!');
+        }
+
+        return view('inquiry.completed');
+    }
+
+    public function completed_filters(Request $request) : \Illuminate\Http\JsonResponse
+    {
+        $columns = ['id', 'name_surname', 'treatment', 'country', 'status', 'coordinator', 'registration_date'];
+
+        // Sıralama ve sayfalama parametreleri
+        $limit = $request->input('length');
+        $start = $request->input('start');
+        $order = $columns[$request->input('order.0.column')];
+        $dir = $request->input('order.0.dir');
+        $status = InquiryStatus::OPERATION_DONE->value;
+
+        // Filtreleme
+        $search = $request->input('search.value');
+
+        //main query
+        $query = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '=', $status);
+
+        //search
+        if ( !empty($search) ) {
+            $query->where('name', 'like', '%'.$search.'%')
+                ->orWhere('surname', 'like', '%'.$search.'%')
+                ->orWhere('email', 'like', '%'.$search.'%')
+                ->orWhere('phone', 'like', '%'.$search.'%')
+                ->orWhere('country', 'like', '%'.$search.'%')
+                ->orWhereHas('treatment', function ($query) use ($search) {
+                    $query->where('name', 'like', '%'.$search.'%');
+                });
+        }
+
+        //toplam data
+        $totalFiltered = $query->count();
+        $totalData = Inquiry::with(['coordinator', 'treatment', 'answers'])->where('status', '=', $status)->count();
+
+        //sıralama ve sayfalama
+        $inquiries = $query->offset($start)
+            ->limit($limit)
+            ->orderBy($order, $dir)
+            ->get();
+
+        //data
+        $data = [];
+        foreach ($inquiries as $inquiry) {
+            $nestedData = [
+                'id' => $inquiry->id,
+                'name_surname' => maskWord($inquiry->name) . ' ' . maskWord($inquiry->surname),
+                'coordinator' => $inquiry->coordinator->name ?? '-',
+                'registration_date' => $inquiry->created_at->format('d.m.Y H:i'),
+                'treatment' => $inquiry->treatment->name,
+                'country' => $inquiry->country,
+                'status' => __(\App\Enums\InquiryStatus::from($inquiry->status)->getLabel() ),
+                'status_id' => $inquiry->status,
+                'code' => $inquiry->answers->code ?? '',
+                'medical_form_link' => route('medical-forms.show', $inquiry->answers->code) ?? '',
+                'action' => ''
+            ];
+            $data[] = $nestedData;
+        }
+
+        $json_data = [
+            "draw" => intval($request->input('draw')),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data" => auth()->user()->hasRole('Super Admin') ? $data : collect($data)->filter(function ($item) {
+
+                $inquiry = Inquiry::where(['assigment_to' => auth()->id()])->first() ?? null;
+
+                if (!$inquiry) {
+                    return false;
+                }
+
+                return $inquiry->inquiry_id == $item['id'];
+
+            })->values()
+        ];
+
+        return response()->json($json_data);
+    }
+
+    public function makeTreatmentSchedule(Request $request, $inquiry)
+    {
+        $inquiry = Inquiry::find($inquiry);
+        return view('inquiry.treatment-wizard', compact('inquiry'));
+    }
+
+    public function saveTreatmentSchedule(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'inquiry_id' => 'required|exists:inquiries,id',
+        ]);
+
+        $validated = (object) $validator->validated();
+
+        $inquiry = Inquiry::find($validated->inquiry_id);
+
+        $inquiry->update([
+            'treatment_schedule' => json_encode($request->all()),
+            'status' => InquiryStatus::PLANNED->value
+        ]);
+
+
+        $calendar = Calendar::create([
+            'user_id' => $inquiry->assignment_to,
+            'title' => $inquiry->name . ' ' . $inquiry->surname,
+            'start' => $request->operation_date,
+            'end' => $request->operation_date,
+            'data' => json_encode([
+                'doctor' => $request->doctor_id,
+                'hospital' => $request->hospital_id,
+                'notes' => $request->notes,
+                'operation_date' => $request->operation_date,
+            ])
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Treatment schedule saved successfully']);
     }
 
     /**
@@ -377,25 +599,45 @@ class InquiryController extends Controller
             return response()->json(['status' => 'error', 'message' => 'User not found']);
         }
 
-        $hashKey = Arr::join([$inquiry->id, $inquiry->email, $inquiry->phone], '-');
-        $newPassword = Str::random(8);
-        $formHash = Str::of(Hash::make($hashKey))->upper()->limit(16, '')->replace('/', 'A')->replace('$', 'B');
-
-        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{patient_name}}', $inquiry->name);
-        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{patient_surname}}', $inquiry->surname);
-        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{username}}', $inquiry->email);
-        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{password}}', $newPassword);
-        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{your_medical_form_link}}', route('medical-forms.show', $formHash));
-
-        $medicalForm = MedicalForm::where(['treatment_id' => $inquiry->treatment_id, 'language_id' => $inquiry->language_id])->first();
+        $medicalForm = MedicalForm::where([
+            'treatment_id' => $inquiry->treatment_id,
+            'language_id' => $inquiry->language_id
+        ])->first();
 
         if (!$medicalForm) {
             return response()->json(['status' => 'error', 'message' => 'Medical form not found']);
         }
 
+        $medicalformPatientAnswers = MedicalFormPatientAnswers::where([
+            'inquiry_id' => $inquiry->id,
+            'user_id' => $inquiry->user_id,
+        ])->first();
+
+        if ( !$medicalformPatientAnswers ) {
+            $hashKey = Arr::join([$inquiry->id, $inquiry->email, $inquiry->phone], '-');
+            $formHash = Str::of(Hash::make($hashKey))->upper()->limit(16, '')->replace('/', 'A')->replace('$', 'B');
+
+            $medicalformPatientAnswers = MedicalFormPatientAnswers::create([
+                'inquiry_id' => $inquiry->id,
+                'medical_form_id' => $medicalForm->id,
+                'user_id' => $inquiry->user_id,
+                'code' => $formHash,
+                'answers' => [],
+                'last_answers_at' => Carbon::create(Carbon::now())->addDays(365)
+            ]);
+
+        } else {
+            $formHash = $medicalformPatientAnswers->code;
+        }
+
+        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{patient_name}}', $inquiry->name);
+        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{patient_surname}}', $inquiry->surname);
+        $messageTemplate->message = Str::of($messageTemplate->message)->replace('{{your_medical_form_link}}', route('medical-forms.show', $formHash));
+
         $html = view('components.backend.inquiries.modal.medical-form-message-for-email',
-                            compact('inquiry', 'messageTemplate', 'newPassword', 'user', 'formHash', 'medicalForm'))
+                            compact('inquiry', 'messageTemplate', 'user', 'formHash', 'medicalForm'))
                 ->render();
+
         return response()->json(['status' => 'success', 'html' => $html]);
     }
 
@@ -416,25 +658,16 @@ class InquiryController extends Controller
         $input = (object) $validated->validated();
 
         $inquiry = Inquiry::find($input->id);
-        $user = User::find($inquiry->user_id);
-        $user->update([
-            'password' => Hash::make($input->formHash)
-        ]);
 
-        //ready form answers
-        $medicalformPatientAnswers = MedicalFormPatientAnswers::create([
-            'inquiry_id' => $inquiry->id,
-            'medical_form_id' => $input->medicalFormId,
-            'user_id' => $user->id,
-            'code' => $input->formHash,
-            'answers' => [],
-            'last_answers_at' => Carbon::create(Carbon::now())->addDays(3)
-        ]);
+        $medicalformPatientAnswers = MedicalFormPatientAnswers::where(['id' => $input->medicalFormId, 'user_id' => $inquiry->userId])->first();
+
+        $user = User::find($input->userId);
 
         event(new MedicalFormSentEvent($inquiry, $user, $medicalformPatientAnswers));
 
         return response()->json(['status' => 'success', 'message' => 'Message sent it with WhatsApp..!', 'url' => 'https://wa.me/'. $inquiry->phone .'?text='.urlencode(html_to_markdown($input->message))]);
     }
+
 
 
     /**

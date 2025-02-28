@@ -169,6 +169,12 @@
                                     html += '<a href="#" class="dropdown-item show_medical_form" data-id="'+ data.id +'">'+
                                         '<i class="fas fa-eye"></i> {{ __('Show Medical Form') }}' +
                                         '</a>';
+                                    html += '<a href="#" class="dropdown-item change_status" data-status="{{ \App\Enums\InquiryStatus::ANESTHESIA_ACCEPTED->value }}" data-id="'+ data.id +'">'+
+                                        '<i class="fas fa-thumb-up"></i> {{ __('Approve') }}' +
+                                        '</a>';
+                                    html += '<a href="#" class="dropdown-item change_status" data-status="{{ \App\Enums\InquiryStatus::ANESTHESIA_REJECTED->value }}" data-id="'+ data.id +'">'+
+                                        '<i class="fas fa-thumb-down"></i> {{ __('Reject') }}' +
+                                        '</a>';
                                     html += '</div></div>';
                                     html += '</div>';
                                 return html;
@@ -185,6 +191,41 @@
 
                 //redirect to medical form
                 window.open(url, '_blank').focus();
+            });
+
+            //change status
+            $(document).on('click', '.change_status', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                let status = $(this).data('status');
+                let url = '{{ route('admin.inquiries.statusUpdate') }}';
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        _method: 'POST',
+                        id : id,
+                        status : status
+                    },
+                    success: function (response) {
+                        if (response.status) {
+                            table.ajax.reload();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: response.message,
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message,
+                            });
+                        }
+                    }
+                });
             });
 
         });

@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('calendar', function (Blueprint $table) {
             $table->id();
-            $table->text('name');
-            $table->text('code')->nullable();
-            $table->text('phone_code')->nullable();
-            $table->text('language')->nullable();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->dateTime('start');
+            $table->dateTime('end');
+            $table->json('data')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('calendar');
     }
 };

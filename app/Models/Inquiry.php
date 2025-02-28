@@ -27,4 +27,9 @@ class Inquiry extends Model
     {
         return $this->hasOne(MedicalFormPatientAnswers::class, 'inquiry_id', 'id');
     }
+
+    public function country(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'country_id', 'id');
+    }
 }

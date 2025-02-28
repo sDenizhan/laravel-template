@@ -20,7 +20,7 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <form action="{{ route('admin.hospitals.store') }}" method="POST">
+            <form action="{{ route('api.admin.hospitals.store') }}" method="POST" id="hospital-create-form">
                 @csrf
                 <div class="card-body">
                     <div class="mb-3">
@@ -84,15 +84,46 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('themes/backend/default/assets/libs/multiselect/css/multi-select.css') }}">
     <link rel="stylesheet" href="{{ asset('themes/backend/default/assets/libs/select2/css/select2.min.css') }}">
+    <!-- Sweet Alert -->
+    <link href="{{ asset('themes/backend/default/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
 @push('scripts')
     <script src="{{ asset('themes/backend/default/assets/libs/select2/js/select2.min.js') }}"></script>
+    <!-- Sweet Alert -->
+    <script src="{{ asset('themes/backend/default/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
     <script>
         $(document).ready(function() {
             $('.select2').select2({
                 multiple: true,
             });
+
+            $('#hospital-create-form').on('submit', function(e){
+                e.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+
+                $.post(url, form.serialize(), function(response){
+                    if (response.status == 'success') {
+                        //sweet alert success
+                        Swal.fire({
+                            title: 'Success!',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'Ok'
+                        });
+                        form.trigger('reset');
+                    } else {
+                        //sweet alert error
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.message,
+                            icon: 'error',
+                            confirmButtonText: 'Ok'
+                        });
+                    }
+                });
+            })
         });
     </script>
 @endpush

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('email');
             $table->text('phone');
             $table->text('message')->nullable();
-            $table->text('country')->nullable();
+            $table->integer('country_id')->default(0);
             $table->text('ip_address')->nullable();
 
             $table->integer('assignment_by')->default(0);

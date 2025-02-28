@@ -156,6 +156,7 @@
                             d.status = "{{ \App\Enums\InquiryStatus::APPROVED->value }}";
                         }
                     },
+                    order : [[1, 'desc']],
                     columns: [
                         {data: 'action', name: 'action'},
                         {data: 'id', name: 'id'},
@@ -172,6 +173,7 @@
                         {
                             targets: 0,
                             data: 'action',
+                            sortable: false,
                             render : function (row, type, data) {
 
                                 var allStatus = @json(\App\Enums\InquiryStatus::toArray());
@@ -217,11 +219,13 @@
                                     html += '<a href="#" class="dropdown-item show_medical_form" data-id="'+ data.id +'">'+
                                         '<i class="fas fa-eye"></i> {{ __('Show Medical Form') }}' +
                                         '</a>';
-                                }
 
-                                if ( currentStatus === allStatus.FORM_RECEIVED ) {
                                     html += '<a href="#" class="dropdown-item send_to_anesthesia" data-id="'+ data.id +'">'+
                                         '<i class="fas fa-user-md"></i> {{ __('Send to Anaesthetist Doctor') }}' +
+                                        '</a>';
+
+                                    html += '<a href="#" class="dropdown-item send_to_doctor" data-id="'+ data.id +'">'+
+                                        '<i class="fas fa-user-md"></i> {{ __('Send to Doctor') }}' +
                                         '</a>';
                                 }
 
@@ -230,7 +234,13 @@
                                 }
 
                                 if ( currentStatus === allStatus.ANESTHESIA_ACCEPTED ) {
+                                    html += '<a href="#" class="dropdown-item send_to_anesthesia" data-id="'+ data.id +'">'+
+                                        '<i class="fas fa-user-md"></i> {{ __('Send to Anaesthetist Doctor') }}' +
+                                        '</a>';
 
+                                    html += '<a href="#" class="dropdown-item send_to_doctor" data-id="'+ data.id +'">'+
+                                        '<i class="fas fa-user-md"></i> {{ __('Send to Doctor') }}' +
+                                        '</a>';
                                 }
 
                                 if ( currentStatus === allStatus.ANESTHESIA_REJECTED ) {
@@ -238,7 +248,9 @@
                                 }
 
                                 if ( currentStatus === allStatus.DOCTOR_ACCEPTED ) {
-
+                                    html += '<a href="#" class="dropdown-item make_treatment_schedule" data-id="'+ data.id +'">'+
+                                        '<i class="fas fa-user-md"></i> {{ __('Make Treatment Schedule') }}' +
+                                        '</a>';
                                 }
 
                                 if ( currentStatus === allStatus.DOCTOR_REJECTED ) {
@@ -270,9 +282,25 @@
                             }
                         },
                         {
+                            target: 2,
+                            sortable: false,
+                        },
+                        {
                             targets: 5,
                             data: 'status',
                             render : function (row, type, data) {
+
+                                switch (row) {
+                                    case 'APPROVED':
+                                        return '<span class="badge badge-soft-success">'+ row +'</span>';
+                                    case 'NOT_REACHED':
+                                        return '<span class="badge badge-soft-danger">'+ row +'</span>';
+                                    case 'GIVE_UP':
+                                        return '<span class="badge badge-soft-warning">'+ row +'</span>';
+                                    case 'FORM_SENT':
+                                        return '<span class="badge badge-soft-info">'+ row +'</span>';
+                                }
+
                                 return '<span class="badge badge-soft-success">'+ row +'</span>';
                             }
                         },
@@ -282,10 +310,33 @@
                             render : function (row, type, data) {
                                 return row.length > 15 ? row.slice(0, 15)+'...' : row;
                             }
+                        },
+                        {
+                            targets: 6,
+                            visible: false,
                         }
                     ]
                 });
 
+
+            //on hide remove class
+            $('#inquiryModal').on('hidden.bs.modal', function () {
+                $('#inquiryModal .modal-footer').find('button.btn-primary')
+                    .removeClass('email_send')
+                    .removeClass('wh_send')
+                    .removeClass('save_inquiry')
+                    .removeClass('send_to_anaesthesia');
+            });
+
+            $(document).on('click', 'a.make_treatment_schedule', function (e){
+                e.preventDefault();
+
+                let id = $(this).data('id');
+                let url = '{{ route('admin.inquiries.make-schedule', ['inquiryId' => ':inquiryId']) }}';
+                url = url.replace(':inquiryId', id)
+
+                window.location.href = url;
+            });
 
             //update status
             $(document).on('click', '.update_status', function (e){
@@ -360,6 +411,7 @@
                 });
             });
 
+            //summernote
             $('#inquiryModal').on('shown.bs.modal', function () {
                 $('.summernote').summernote({
                     height: 450,
@@ -391,7 +443,7 @@
                     if ( response.status === 'success') {
                         $('#inquiryModal .modal-body').html(response.html);
                         $('.subject').remove();
-                        $('#inquiryModal .modal-footer').find('button.save_inquiry').addClass('wh_send').text('Send');
+                        $('#inquiryModal .modal-footer').find('button.btn-primary').addClass('email_send').text('Send');
                         $('#inquiryModal').modal('show');
                     } else {
                         Swal.fire(
@@ -401,6 +453,35 @@
                         );
                     }
                 });
+            });
+
+            //mail sending
+            $(document).on('click', '.email_send', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var data = $('#inquiryModalForm').serialize();
+
+                console.log(data);
+
+                $('h4.modal-title').text('Send Form Mail');
+
+                $.post('{{ route('api.admin.emails.medical-form-sending-with-email') }}', data, function(response) {
+                    if ( response.status === 'success') {
+                        Swal.fire(
+                            '{{ __('Success!') }}',
+                            '{{ __('Inquiry has been sent to email.') }}',
+                            'success'
+                        );
+                    } else {
+                        Swal.fire(
+                            '{{ __('Error!') }}',
+                            '{{ __('Something went wrong!') }}',
+                            'error'
+                        );
+                    }
+                });
+
+                $('#inquiryModal .modal-footer').find('button.btn-primary').removeClass('email_send');
             });
 
             //send form whatsapp
@@ -419,7 +500,7 @@
                     if ( response.status === 'success') {
                         $('#inquiryModal .modal-body').html(response.html);
                         $('.subject').remove();
-                        $('#inquiryModal .modal-footer').find('button.save_inquiry').addClass('wh_send').text('Send');
+                        $('#inquiryModal .modal-footer').find('button').removeClass('email_send').removeClass('save_inquiry').addClass('wh_send').text('Send');
                         $('#inquiryModal').modal('show');
                     } else {
                         Swal.fire(
@@ -471,6 +552,7 @@
                 $.get(url, function(response) {
                     $('#inquiryModal .modal-body').html(response.html);
                     $('#inquiryModal').modal('show');
+                    $('#inquiryModal .modal-footer').find('button.btn-primary').removeClass('email_send').removeClass('wh_send').addClass('save_inquiry').text('Send');
                 });
             });
 
@@ -555,10 +637,10 @@
                 var id = $(this).data('id');
                 $('h4.modal-title').text('Send to Anaesthesia');
 
-                $.post('{{ route('api.admin.doctors.get') }}', {
+                $.get('{{ route('api.admin.doctors.get') }}', {
                     id: id,
                     _token : '{{ csrf_token() }}',
-                    _method: 'POST',
+                    _method: 'GET',
                     role : 'Anaesthetist'
                 }, function(response) {
                     if ( response.status === 'success') {
@@ -582,7 +664,7 @@
                             }
                         }).trigger('change');
 
-                        $('#inquiryModal .modal-footer').find('button.save_inquiry').addClass('send_to_anaesthesia').text('Send');
+                        $('#inquiryModal .modal-footer').find('button.btn-primary').addClass('send_to_anaesthesia').text('Send');
                         $('#inquiryModal').modal('show');
                     } else {
                         Swal.fire(
@@ -618,6 +700,76 @@
                 });
             });
 
+            //sent to doctors
+            $(document).on('click', '.send_to_doctor', function (e){
+                e.preventDefault();
+
+                var id = $(this).data('id');
+                $('h4.modal-title').text('Send to Doctor');
+
+                $.get('{{ route('api.admin.doctors.get') }}', {
+                    id: id,
+                    _token : '{{ csrf_token() }}',
+                    _method: 'GET',
+                    role : 'Doctor'
+                }, function(response) {
+                    if ( response.status === 'success') {
+
+                        var doctors = response.data;
+                        var options = '<select name="doctor_id[]" id="doctor_id" placeholder="" multiple class="form-control select2">';
+                        for (var i = 0; i <= doctors.length-1; i++) {
+                            var doctor = doctors[i];
+                            options += '<option value="'+ doctor.id +'">'+ doctor.name +'</option>';
+                        }
+                        options += '</select>';
+
+                        var html = '<div class="form-group"><label for="doctor_id" class="form-label">{{ __('Select Doctor') }}</label>'+ options +'</div>';
+                        html += '<input type="hidden" name="inquiry_id" value="'+ id +'">';
+                        $('#inquiryModal .modal-body').html(html);
+
+                        $('#inquiryModal .modal-body').find('select#doctor_id').select2({
+                            placeholder: {
+                                id: '-1',
+                                text: 'Select Doctor'
+                            }
+                        }).trigger('change');
+
+                        $('#inquiryModal .modal-footer').find('button.btn-primary').addClass('send_to_doctor').text('Send');
+                        $('#inquiryModal').modal('show');
+                    } else {
+                        Swal.fire(
+                            '{{ __('Error!') }}',
+                            response.message,
+                            'error'
+                        );
+                    }
+                });
+            });
+
+            //send to doctor
+            $(document).on('click', 'button.send_to_doctor', function (e){
+                e.preventDefault();
+
+                var data = $('#inquiryModalForm').serialize();
+
+                $.post('{{ route('admin.doctors.send_to_doctor') }}', data, function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire(
+                            '{{ __('Success!') }}',
+                            '{{ __('Inquiry has been sent to doctor.') }}',
+                            'success'
+                        );
+                        $('#inquiryModal').modal('hide');
+                    } else {
+                        Swal.fire(
+                            '{{ __('Error!') }}',
+                            '{{ __('Something went wrong!') }}',
+                            'error'
+                        );
+                    }
+                });
+            });
+
             //save
             $(document).on('click', '.save_inquiry', function(e) {
                 e.preventDefault();
@@ -631,6 +783,8 @@
                     } else {
                         $('#inquiryModal').find('div.modal-body').append('div.alert.alert-danger').empty().html('<p>' + response.message + '</p>');
                     }
+
+                    $('#inquiryModal > .model-footer').find('button.btn-primary').removeClass('save_inquiry');
                 });
             });
 

@@ -98,7 +98,7 @@
                             </a>
                         </li>
 
-                        @hasanyrole('Super Admin|Admin|Coordinator|Anaesthetist')
+                        @hasanyrole('Super Admin|Admin|Coordinator|Anaesthetist|Doctor')
 
                             <li class="menu-title">Inquires</li>
 
@@ -110,7 +110,8 @@
                                 </a>
                                 <div class="collapse" id="menuInquires">
                                     <ul class="sub-menu">
-                                        @can('view-waiting-inquiries')
+
+                                        @can('view-inactive-inquiries')
                                         <li class="menu-item">
                                             <a href="{{ route('admin.inquiries.waiting') }}" class="menu-link">
                                                 <span class="menu-text">{{ __('Waiting') }}</span>
@@ -118,7 +119,7 @@
                                         </li>
                                         @endcan
 
-                                        @can('view-approved-inquiries')
+                                        @can('view-active-inquiries')
                                         <li class="menu-item">
                                             <a href="{{ route('admin.inquiries.approved') }}" class="menu-link">
                                                 <span class="menu-text">{{ __('Approved') }}</span>
@@ -133,10 +134,50 @@
                                                 </a>
                                             </li>
                                         @endcan
+
+                                        @can('doctor-can-view-inquiry')
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.inquiries.doctors') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Awaiting Doctors') }}</span>
+                                                </a>
+                                            </li>
+                                        @endcan
+
+                                        @can('view-completed-inquiries')
+                                            <li class="menu-item">
+                                                <a href="{{ route('admin.inquiries.completed') }}" class="menu-link">
+                                                    <span class="menu-text">{{ __('Completed') }}</span>
+                                                </a>
+                                            </li>
+                                        @endcan
                                     </ul>
                                 </div>
                             </li>
 
+                            <li class="menu-title">{{ __('Reports') }}</li>
+
+                            <li class="menu-item">
+                                <a href="#menuReports" data-bs-toggle="collapse" class="menu-link">
+                                    <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                                    <span class="menu-text"> {{ __('Reports')  }}</span>
+                                    <span class="menu-arrow"></span>
+                                </a>
+
+                                <div class="collapse" id="menuReports">
+                                    <ul class="sub-menu">
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.reports.applications') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Applications') }}</span>
+                                            </a>
+                                        </li>
+                                        <li class="menu-item">
+                                            <a href="{{ route('admin.reports.coordinators') }}" class="menu-link">
+                                                <span class="menu-text">{{ __('Coordinators') }}</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                         @endrole
 
                         @hasanyrole('Super Admin|Admin')

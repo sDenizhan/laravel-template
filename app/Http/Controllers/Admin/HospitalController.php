@@ -34,27 +34,6 @@ class HospitalController extends Controller
         return view('hospital.create', compact('doctors', 'anaesthetists'));
     }
 
-    public function store(StoreHospitalRequest $request)
-    {
-        $doctors = $request->input('doctors');
-        $anaesthetists = $request->input('anaesthetists');
-
-        $validated = Arr::except($request->validated(), ['doctors', 'anaesthetists']);
-        $hospital = Hospital::create($validated);
-
-        if ( isset($doctors) ) {
-            $hospital = Hospital::find($hospital->id);
-            $hospital->users()->attach($doctors);
-        }
-
-        if ( isset($anaesthetists) ) {
-            $hospital = Hospital::find($hospital->id);
-            $hospital->users()->attach($anaesthetists);
-        }
-
-        return redirect()->route('admin.hospitals.create')->with('success', 'Hospital created successfully.');
-    }
-
     public function show(string $id)
     {
         //

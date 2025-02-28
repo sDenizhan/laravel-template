@@ -23,7 +23,8 @@ class RoleSeeder extends Seeder
 
         $coordinator->givePermissionTo([
             'view-inquiry',
-            'create-inquiry'
+            'create-inquiry',
+            'view-active-inquiry',
         ]);
 
         $admin->givePermissionTo([
@@ -34,10 +35,13 @@ class RoleSeeder extends Seeder
 
         $doctor->givePermissionTo([
             'doctor-can-view-inquiry',
+            'doctor-can-add-notes',
         ]);
 
         $anaesthetist->givePermissionTo([
             'doctor-can-view-inquiry',
+            'doctor-can-add-notes',
+            'view-anaesthetist-inquiries',
         ]);
 
     }

@@ -214,19 +214,22 @@
                     confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
                     if (result.isConfirmed) {
+
                         let formId = $(this).data('formid');
                         let questionId = $(this).data('questionid');
-                        let url = '{{ route('admin.medical-form-questions.destroy', ['medical_form_question' => ':formId']) }}';
+                        let url = "{{ route('admin.medical-form-questions.delete-question', ['formId' => ':formId']) }}";
                         url = url.replace(':formId', formId);
 
                         $.ajax({
                             url: url,
-                            type: 'DELETE',
+                            type: 'POST',
                             data: {
-                                _token: '{{ csrf_token() }}'
+                                _token: '{{ csrf_token() }}',
+                                questionId: questionId,
+                                formId: formId
                             },
                             success: function(response){
-                                if(response.status == 'success'){
+                                if(response.status === 'success'){
                                     Swal.fire({
                                         icon: 'success',
                                         title: 'Success',

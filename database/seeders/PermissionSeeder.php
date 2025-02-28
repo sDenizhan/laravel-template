@@ -19,6 +19,7 @@ class PermissionSeeder extends Seeder
             'edit-role',
             'delete-role',
             'view-role',
+            //user
             'create-user',
             'edit-user',
             'delete-user',
@@ -28,6 +29,9 @@ class PermissionSeeder extends Seeder
             'edit-inquiry',
             'delete-inquiry',
             'view-inquiry',
+            'view-active-inquiry',
+            'view-inactive-inquiry',
+            'view-anaesthetist-inquiry',
             //doctor
             'create-doctor',
             'edit-doctor',
@@ -40,6 +44,8 @@ class PermissionSeeder extends Seeder
             'view-hospital',
             //for doctor
             'doctor-can-view-inquiry',
+            'doctor-can-add-notes',
+            'view-anaesthetist-inquiries',
          ];
 
           // Looping and Inserting Array's Permissions into Permission Table

@@ -56,7 +56,7 @@ class InquiryController extends Controller
         ]);
 
         if ($validated->fails() ){
-            return response()->json(['status' => 'error', 'message' => 'Başvurunuz Kayıt Edilemedi!' ], 200);
+            return response()->json(['status' => 'error', 'message' => __('Eksik Bilgiler Mevcuttur. Lütfen Tekrar Deneyiniz.! Eksik Bilgiler : '. join(', ', array_keys($validated->errors()->toArray()) ) )], 200);
         }
 
         $store = Inquiry::create($validated->validated());

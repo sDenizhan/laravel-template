@@ -131,9 +131,18 @@ class MedicalFormQuestionController extends Controller
         }
     }
 
-    public function destroy(string $questionId)
+    public function destroy(Request $request)
     {
-        $question = MedicalFormQuestion::find($questionId);
+        $validator = Validator::make($request->all(), [
+            'questionId' => 'required|integer',
+            'formId' => 'required|integer'
+        ]);
+
+        $validated = $validator->validated();
+        $questionId = $validated['questionId'];
+        $formId = $validated['formId'];
+
+        $question = MedicalFormQuestion::where(['id' => $questionId, 'medical_form_id' => $formId])->first();
         if ( $question->delete() ){
             return  response()->json([
                 'status' => 'success',
