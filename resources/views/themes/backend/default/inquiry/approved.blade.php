@@ -206,6 +206,9 @@
                                         '<a href="#" class="dropdown-item send_form_whatsapp" data-id="'+ data.id +'">' +
                                         '<i class="fas fa-sms"></i> {{ __('Sent Form via Whatsapp') }}' +
                                         '</a>' +
+                                        '<a href="#" class="dropdown-item send_form_telegram" data-id="'+ data.id +'">' +
+                                        '<i class="fas fa-sms"></i> {{ __('Sent Form via Telegram') }}' +
+                                        '</a>' +
                                         '<a href="#" class="dropdown-item show_medical_form" data-id="'+ data.id +'">'+
                                         '<i class="fa fa-medical"></i> {{ __('Show Medical Form') }}' +
                                         '</a>'+
@@ -531,6 +534,55 @@
                     }
                 });
             });
+
+            //send form with telegram
+            $(document).on('click', '.send_form_telegram', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+
+                $('h4.modal-title').text('Send Form via Telegram');
+
+                $.post('{{ route('admin.inquiries.get-inquiry-message-template') }}', {
+                    id: id,
+                    function : 'whatsapp',
+                    _token : '{{ csrf_token() }}',
+                    _method: 'POST',
+                }, function(response) {
+                    if ( response.status === 'success') {
+                        $('#inquiryModal .modal-body').html(response.html);
+                        $('.subject').remove();
+                        $('#inquiryModal .modal-footer').find('button').removeClass('telegram_send').removeClass('email_send').removeClass('save_inquiry').addClass('telegram_send').text('Send');
+                        $('#inquiryModal').modal('show');
+                    } else {
+                        Swal.fire(
+                            '{{ __('Error!') }}',
+                            response.message,
+                            'error'
+                        );
+                    }
+                });
+            });
+
+            //send form whatsapp
+            $(document).on('click', '.telegram_send', function (e){
+                e.preventDefault();
+
+                var data = $('#inquiryModalForm').serialize();
+
+                $.post('{{ route('admin.inquiries.send_to_telegram') }}', data, function(response) {
+                    if (response.status === 'success') {
+                        window.open(response.url, '_blank').focus();
+                        $('#inquiryModal').modal('hide');
+                    } else {
+                        Swal.fire(
+                            '{{ __('Error!') }}',
+                            '{{ __('Something went wrong!') }}',
+                            'error'
+                        );
+                    }
+                });
+            });
+
 
             //cancellation
             $(document).on('click', '.cancellation', function (e) {

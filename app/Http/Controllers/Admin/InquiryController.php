@@ -668,6 +668,33 @@ class InquiryController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Message sent it with WhatsApp..!', 'url' => 'https://wa.me/'. $inquiry->phone .'?text='.urlencode(html_to_markdown($input->message))]);
     }
 
+    public function send_with_telegram(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validated = \Validator::make($request->all(), [
+            'id' => 'required|exists:inquiries,id',
+            'message' => 'required',
+            'userId' => 'required|exists:users,id',
+            'formHash' => 'required',
+            'medicalFormId' => 'required|exists:medical_forms,id'
+        ]);
+
+        if ($validated->fails()) {
+            return response()->json(['status' => 'error', 'message' => 'Inquiry not found']);
+        }
+
+        $input = (object) $validated->validated();
+
+        $inquiry = Inquiry::find($input->id);
+
+        $medicalformPatientAnswers = MedicalFormPatientAnswers::where(['id' => $input->medicalFormId, 'user_id' => $inquiry->userId])->first();
+
+        $user = User::find($input->userId);
+
+        event(new MedicalFormSentEvent($inquiry, $user, $medicalformPatientAnswers));
+
+        return response()->json(['status' => 'success', 'message' => 'Message sent it with WhatsApp..!', 'url' => 'https://t.me/'. $inquiry->phone .'?text='.urlencode(html_to_markdown($input->message))]);
+    }
+
 
 
     /**

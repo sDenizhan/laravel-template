@@ -29,21 +29,16 @@ use App\Http\Controllers\Admin\CalendarController;
 |
 */
 
-Route::get('/test', function () {
-    $countries = json_decode(file_get_contents('https://restcountries.com/v3.1/all'), true);
-
-    $countriesArray = [];
-
-    foreach ($countries as $country) {
-        $countriesArray[] = [
-            "name" => $country["translations"]["tur"]["common"] ?? $country["name"]["common"],
-            "code" => $country["cca2"],
-            "alpha3" => $country["cca3"],
-            "phone_code" => isset($country["idd"]["root"]) ? $country["idd"]["root"] . ((isset($country["idd"]["suffixes"]) & count($country["idd"]["suffixes"]) < 2) ? implode('', $country["idd"]["suffixes"]) : '') : ''
-        ];
-    }
-
-    print_r($countriesArray);
+Route::get('/set', function () {
+    Artisan::command('storage:link', function (){
+        $this->info('Storage link created');
+    });
+    Artisan::command('cache:clear', function (){
+        $this->info('Cache cleared');
+    });
+    Artisan::command('migrate:fresh --seed', function (){
+        $this->info('Database migrated and seeded');
+    });
 });
 
 Route::get('/', function () {
@@ -105,6 +100,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     Route::post('/inquiries/get-inquiry-message-template', [InquiryController::class, 'getInquiryMessageTemplate'])->name('inquiries.get-inquiry-message-template');
     Route::post('/inquiries/send_to_whatsapp', [InquiryController::class, 'send_with_whatsapp'])->name('inquiries.send_to_whatsapp');
+    Route::post('/inquiries/send_to_telegram', [InquiryController::class, 'send_with_telegram'])->name('inquiries.send_to_telegram');
 
     Route::get('/inquiries/view-medical-form/{formId}', [InquiryController::class, 'viewMedicalForm'])->name('inquiries.view-medical-form');
     Route::post('/inquiries/save-notes', [InquiryController::class, 'saveNotes'])->name('inquiries.save-notes');
