@@ -21,8 +21,7 @@ class DatabaseSeeder extends Seeder
             HospitalSeeder::class,
             DoctorSeeder::class,
             LanguageSeeder::class,
-            CountrySeeder::class,
-            InqurySeeder::class
+            CountrySeeder::class
         ]);
     }
 }

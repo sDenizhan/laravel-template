@@ -208,13 +208,17 @@
                                         '</a>' +
                                         '<a href="#" class="dropdown-item send_form_telegram" data-id="'+ data.id +'">' +
                                         '<i class="fas fa-sms"></i> {{ __('Sent Form via Telegram') }}' +
-                                        '</a>' +
-                                        '<a href="#" class="dropdown-item show_medical_form" data-id="'+ data.id +'">'+
-                                        '<i class="fa fa-medical"></i> {{ __('Show Medical Form') }}' +
-                                        '</a>'+
-                                        '<a href="'+ data.medical_form_link +'" class="dropdown-item copy_reference_link" data-id="'+ data.id +'">' +
-                                        '<i class="fa fa-link"></i> {{ __('Copy Medical Form Link') }}' +
                                         '</a>';
+
+                                        if ( currentStatus === allStatus.FORM_RECEIVED ) {
+                                            html += '<a href="#" class="dropdown-item show_medical_form" data-id="'+ data.id +'">'+
+                                            '<i class="fa fa-medical"></i> {{ __('Show Medical Form') }}' +
+                                            '</a>'+
+                                            '<a href="'+ data.medical_form_link +'" class="dropdown-item copy_reference_link" data-id="'+ data.id +'">' +
+                                            '<i class="fa fa-link"></i> {{ __('Copy Medical Form Link') }}' +
+                                            '</a>';
+                                        }   
+
                                     @endrole
                                 }
 
@@ -266,14 +270,16 @@
 
                                 html += '<div class="dropdown-divider"></div>';
 
-                                @can('edit-inquiry')
-                                    html += '<a href="#" class="dropdown-item show_inquiry" data-id="'+ data.id +'"><i class="fas fa-eye"></i> {{ __('Show')  }}</a>';
-                                @endcan
-
-                                @can('view-inquiry')
-                                    var viewURL = "{{ route('admin.inquiries.show', ':id') }}".replace(':id', data.id);
-                                    html += '<a href="'+ viewURL +'" class="dropdown-item" data-id="'+ data.id +'"><i class="fas fa-mail-bulk"></i> {{ __('Show Inquiry') }}</a>';
-                                @endcan
+                                if ( currentStatus === allStatus.WAITING ) {
+                                    @can('edit-inquiry')
+                                        html += '<a href="#" class="dropdown-item show_inquiry" data-id="'+ data.id +'"><i class="fas fa-eye"></i> {{ __('Show')  }}</a>';
+                                    @endcan
+                                
+                                    @can('view-inquiry')
+                                        var viewURL = "{{ route('admin.inquiries.show', ':id') }}".replace(':id', data.id);
+                                        html += '<a href="'+ viewURL +'" class="dropdown-item" data-id="'+ data.id +'"><i class="fas fa-mail-bulk"></i> {{ __('Show Inquiry') }}</a>';
+                                    @endcan
+                                }
 
                                 @can('edit-inquiry')
                                     html += '<a href="#" class="dropdown-item cancellation" data-id="'+ data.id +'"><i class="fas fa-trash"></i> {{ __('Cancel') }}</a>';

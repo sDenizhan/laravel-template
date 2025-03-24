@@ -19,6 +19,8 @@ class RoleSeeder extends Seeder
         $doctor = Role::create(['name' => 'Doctor']);
         $anaesthetist = Role::create(['name' => 'Anaesthetist']);
         $patient = Role::create(['name' => 'Patient']);
+        $translator = Role::create(['name' => 'Translator']);
+        $driver = Role::create(['name' => 'Driver']);
 
 
         $coordinator->givePermissionTo([
@@ -44,5 +46,14 @@ class RoleSeeder extends Seeder
             'view-anaesthetist-inquiries',
         ]);
 
+        $translator->givePermissionTo([
+            'view-inquiry',
+            'view-active-inquiry',
+        ]);
+
+        $driver->givePermissionTo([
+            'view-inquiry',
+            'view-active-inquiry',
+        ]);
     }
 }

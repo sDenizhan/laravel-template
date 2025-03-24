@@ -16,7 +16,10 @@ class LanguageSeeder extends Seeder
         $data = [
             ['name' => 'English', 'code' => 'en', 'sort' => 1],
             ['name' => 'Turkish', 'code' => 'tr', 'sort' => 2],
-            ['name' => 'France', 'code' => 'fr', 'sort' => 3]
+            ['name' => 'France', 'code' => 'fr', 'sort' => 3],
+            ['name' => 'Spanish', 'code' => 'es', 'sort' => 4],
+            ['name' => 'Portuguese', 'code' => 'po', 'sort' => 5],
+            ['name' => 'Italiano', 'code' => 'it', 'sort' => 6],
         ];
 
         foreach ($data as $lang) {
