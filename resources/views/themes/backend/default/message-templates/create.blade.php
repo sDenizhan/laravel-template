@@ -114,7 +114,20 @@
     <script>
         $(document).ready(function(){
             var quill = new Quill('#editor', {
-                theme: 'snow'
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        [{ size: ['small', false, 'large', 'huge'] }],
+                        [{ font: [] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        [{ indent: '-1' }, { indent: '+1' }],
+                        [{ color: [] }, { background: [] }],
+                        [{ align: [] }],
+                        ['link', 'image', 'video', 'formula'],
+                        ['code-block']
+                    ]
+                }
             });
 
             $('#formTemplate').submit(function(){
