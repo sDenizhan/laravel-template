@@ -13,13 +13,13 @@ class HospitalSeeder extends Seeder
     public function run(): void
     {
         $hospitals = [
-            'Acıbadem Hospital',
-            'Memorial Hospital',
-            'Medical Park Hospital',
-            'Florence Nightingale Hospital',
-            'Medicana Hospital',
-            'Anadolu Hospital',
-            'American Hospital'
+            'Avrasya Hospital',
+            'Biruni Hospital',
+            'Dentx Hospital',
+            'Era Hospital',
+            'Medistanbul',
+            'Optimed',
+            'Yasam Hospital'
         ];
 
         foreach ($hospitals as $hospital) {

@@ -13,19 +13,18 @@ class TreatmentSeeder extends Seeder
     public function run(): void
     {
         $treatments = [
-            'Liposuction',
-            'Tummy Tuck',
-            'Breast Augmentation',
-            'Breast Lift',
-            'Breast Reduction',
-            'Breast Reconstruction',
-            'Facelift',
-            'Eyelid Surgery',
-            'Brow Lift',
-            'Rhinoplasty',
-            'Ear Surgery',
-            'Chin Surgery',
-            'Cheek Augmentation'
+            'Tüp Mide',
+            'Mini Bypass',
+            'Gastric Bypass',
+            'Gastrik Balon',
+            'Revizyon Bariatrik Cerrahi',
+            'Saç Ekimi',
+            'Göz Ameliyatı',
+            'Estetik, Plastik Cerrahi',
+            'Ortopedi ve Travmatoloji',
+            'Kilo Verme Ameliyatı',
+            'Kalp Damar Cerrahisi',
+            'Diğer / Kozmetik Diş Tedavileri',
         ];
 
         foreach ($treatments as $treatment) {

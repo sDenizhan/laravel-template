@@ -6,6 +6,7 @@ use App\Enums\Gender;
 use App\Enums\Status;
 use App\Models\Language;
 use App\Models\Treatments;
+use App\Models\Country;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,13 +23,14 @@ class InquiryFactory extends Factory
     {
         $treatment = Treatments::inRandomOrder()->first();
         $language = Language::inRandomOrder()->first();
+        $country = Country::inRandomOrder()->first();
 
         return [
             'name' => $this->faker->name(),
             'surname' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'phone' => $this->faker->phoneNumber(),
-            'country' => $this->faker->country(),
+            'country_id' => $country->id,
             'ip_address' => $this->faker->ipv4(),
             'treatment_id' => $treatment->id,
             'language_id' => $language->id,

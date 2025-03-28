@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 
 class SuperAdminSeeder extends Seeder
 {
@@ -32,20 +33,120 @@ class SuperAdminSeeder extends Seeder
 
         $doctors = [
             [
-                'name' => 'Dr. Ahmet Yılmaz',
-                'email' => 'ahmetyilmaz@test.com',
-                'password' => Hash::make('ahmet1234')
+                'name' => 'Ahmet Körmutlu',
+                'email' => 'ahmet@bookingsurgery.com',
+                'password' => Str::random(10)
             ],
             [
-                'name' => 'Dr. Mehmet Yılmaz',
-                'email' => 'mehmetyilmaz@test.com',
-                'password' => Hash::make('mehmet1234')
+                'name' => 'Ali Tardu',
+                'email' => 'ali@bookingsurgery.com',
+                'password' => Str::random(10)
             ],
             [
-                'name' => 'Dr. Ayşe Yılmaz',
-                'email' => 'ayseyilmaz@gmail.com',
-                'password' => Hash::make('ayse1234')
-            ]
+                'name' => 'Dr. Soner Karaali',
+                'email' => 'soner@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Emin Atlı',
+                'email' => 'emin@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Emre Can Kocman',
+                'email' => 'emre@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Esma Özdemir',
+                'email' => 'esma@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Fatih Uzun',
+                'email' => 'fatih@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Funda Aköz',
+                'email' => 'funda@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Hakan Fatih Merev',
+                'email' => 'hakanfatihmrv@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Kağan Katar',
+                'email' => 'kagan@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Koray Temiz',
+                'email' => 'koraytemiz@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Mert Baltacı',
+                'email' => 'mert@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Mustafa Tekir',
+                'email' => 'mustafatekir@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Nebil Selimoğlu',
+                'email' => 'nebil@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Okan Övünç',
+                'email' => 'okanovunc@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Ömer Parıldar',
+                'email' => 'omerparildar@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Rachel Wise',
+                'email' => 'rachel@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Serhat Şen',
+                'email' => 'serhat@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Sevil Kara',
+                'email' => 'sevil@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Soner Karaali',
+                'email' => 'sonerkaraali@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Uğur Azizoğlu',
+                'email' => 'ugurazizoglu@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Vijdan Aslanoglu',
+                'email' => 'vijdan@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
+            [
+                'name' => 'Yalçın Leymunçiçeği',
+                'email' => 'yalcin@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],
         ];
 
         // Creating Doctor User
@@ -57,20 +158,15 @@ class SuperAdminSeeder extends Seeder
         // Creating Anaesthetist User
         $anaesthetists = [
             [
-                'name' => 'Dr. Şevket Yılmaz',
-                'email' => 'sevket@yilmaz.com.tr',
-                'password' => Hash::make('sevket1234')
+                'name' => 'Yasin Esen',
+                'email' => 'yasinesen@bookingsurgery.com',
+                'password' => Str::random(10)
             ],
             [
-                'name' => 'Dr. Hüseyin Yılmaz',
-                'email' => 'huseyin@yilmaz.com.tr',
-                'password' => Hash::make('huseyin1234')
+                'name' => 'Zülfikar Şimşek',
+                'email' => 'zulfikar@bookingsurgery.com',
+                'password' => Str::random(10)
             ],
-            [
-                'name' => 'Dr. Can Yılmaz',
-                'email' => 'can@yilmaz.com.tr',
-                'password' => Hash::make('mehmet1234')
-            ]
         ];
 
         foreach ($anaesthetists as $anaesthetist) {
@@ -81,15 +177,20 @@ class SuperAdminSeeder extends Seeder
         // Creating Coordinator
         $coordinators = [
             [
-                'name' => 'Koordinator 1',
-                'email' => 'koordinator@bookingsurgery.com',
-                'password' => Hash::make('koordinator12345')
+                'name' => 'April O’neal',
+                'email' => 'april@bookingsurgery.com',
+                'password' => Str::random(10)
             ],
             [
-                'name' => 'Koordinator 2',
-                'email' => 'koordinator2@bookingsurgery.com',
-                'password' => Hash::make('koordinator12345')
+                'name' => 'Ashley Cooper',
+                'email' => 'ashley@bookingsurgery.com',
+                'password' => Str::random(10)
             ],
+            [
+                'name' => 'Chloe White',
+                'email' => 'chloe@bookingsurgery.com',
+                'password' => Str::random(10)
+            ],  
         ];
 
         foreach ($coordinators as $coordinator) {

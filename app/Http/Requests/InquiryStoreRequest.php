@@ -26,7 +26,7 @@ class InquiryStoreRequest extends FormRequest
             'name' => 'required',
             'email' => 'required|email',
             'gender' => 'required',
-            'country' => 'required',
+            'country_id' => 'required',
             'surname' => 'required',
             'phone' => 'required',
             'ip_address' => 'nullable',

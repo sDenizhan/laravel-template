@@ -19,6 +19,7 @@ use App\Models\MedicalFormPatientAnswers;
 use App\Models\MessageTemplate;
 use App\Models\Treatments;
 use App\Models\User;
+use App\Models\CountryTranslation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -101,7 +102,7 @@ class InquiryController extends Controller
                 'coordinator' => $inquiry->coordinator->name ?? '-',
                 'registration_date' => $inquiry->created_at->format('d.m.Y H:i'),
                 'treatment' => $inquiry->treatment->name,
-                'country' => $inquiry->country,
+                'country' => $inquiry->country->translations->first()->name ?? '-',
                 'action' => ''
             ];
             $data[] = $nestedData;
@@ -185,7 +186,7 @@ class InquiryController extends Controller
                 'coordinator' => $inquiry->coordinator->name ?? '-',
                 'registration_date' => $inquiry->created_at->format('d.m.Y H:i'),
                 'treatment' => $inquiry->treatment->name,
-                'country' => $inquiry->country,
+                'country' => $inquiry->country->translations->first()->name ?? '-',
                 'status' => __(\App\Enums\InquiryStatus::from($inquiry->status)->getLabel() ),
                 'status_id' => $inquiry->status,
                 'code' => $inquiry->answers->code ?? '',
@@ -552,7 +553,7 @@ class InquiryController extends Controller
             'surname' => $validated['surname'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
-            'country' => $validated['country'],
+            'country_id' => $validated['country_id'],
             'ip_address' => request()->ip(),
             'treatment_id' => $validated['treatment_id'],
             'language_id' => $validated['language_id'],
@@ -709,8 +710,9 @@ class InquiryController extends Controller
 
         $treatments = Treatments::all();
         $languages = Language::all();
+        $countries = CountryTranslation::where('locale', session()->get('locale') ?? 'tr')->orderBy('name', 'asc')->get();
 
-        $html = view('components.backend.inquiries.modal.edit-form', compact('inquiry', 'coordinators', 'treatments', 'languages'))->render();
+        $html = view('components.backend.inquiries.modal.edit-form', compact('inquiry', 'coordinators', 'treatments', 'languages', 'countries'))->render();
         return response()->json(['status' => 'success', 'html' => $html]);
     }
 

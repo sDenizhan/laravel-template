@@ -17,7 +17,8 @@ use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\MedicalFormController as MedicalForm;
 use App\Http\Controllers\Admin\ReportsController;
 use App\Http\Controllers\Admin\CalendarController;
-
+use App\Models\Country;
+use App\Models\CountryTranslation;
 /*
 |--------------------------------------------------------------------------
 | Web Routes

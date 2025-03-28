@@ -19,7 +19,13 @@
         </div>
         <div class="form-group mb-3">
             <label for="country">{{ __('Country') }}</label>
-            <input type="text" class="form-control" id="country" name="country" value="{{ $inquiry->country }}">
+            @if ($countries->count() > 0)
+            <select class="form-control" id="country_id" name="country_id">
+                @foreach($countries as $country)
+                    <option value="{{ $country->country_id }}" {{ $country->country_id == $inquiry->country_id ? 'selected' : '' }}>{{ $country->name }}</option>
+                @endforeach
+            </select>
+            @endif
         </div>
     </div>
     <div class="col-lg-6">
