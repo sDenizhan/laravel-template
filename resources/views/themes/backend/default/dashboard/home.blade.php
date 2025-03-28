@@ -143,7 +143,7 @@
                                         <tr>
                                             <td>{{ join(' ', [$inquiry->name, $inquiry->surname]) }}</td>
                                             <td>{{ $inquiry->treatment->name }}</td>
-                                            <td>{{ $inquiry->country }}</td>
+                                            <td>{{ $inquiry->country->translations->first()->name }}</td>
                                         </tr>
                                     @empty
                                         <tr>
