@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class MedicalFormController extends Controller
 {
     public function index(Request $request, ?string $formId)
-    {   
+    {
         $patientAnswers = MedicalFormPatientAnswers::where(['code' => $formId])->first();
 
         if (!$patientAnswers) {
@@ -48,7 +48,14 @@ class MedicalFormController extends Controller
 
         $validator = \Validator::make($request->all(), [
             'formId' => 'required',
-            'questions' => 'array|nullable'
+            'questions' => 'array|nullable',
+            'emergencyContactName' => 'string|nullable',
+            'emergencyContactRelationship' => 'string|nullable',
+            'emergencyContactPhone' => 'string|nullable',
+            'emergencyContactEmail' => 'string|nullable',
+            'emergencyContactAddress' => 'string|nullable',
+            'bmi_result' => 'string|nullable',
+            'bmi_category' => 'string|nullable',
         ]);
 
         if ( $validator->fails() ) {
@@ -64,7 +71,20 @@ class MedicalFormController extends Controller
         }
 
         $answers->update([
-            'answers' => $validated['questions']
+            'answers' => [
+                'questions' => $validated['questions'] ?? [],
+                'emergency' => [
+                    'name' => $validated['emergencyContactName'],
+                    'relationship' => $validated['emergencyContactRelationship'],
+                    'phone' => $validated['emergencyContactPhone'],
+                    'email' => $validated['emergencyContactEmail'],
+                    'address' => $validated['emergencyContactAddress'],
+                ] ?? [],
+                'bmi' => [
+                    'result' => $validated['bmi_result'],
+                    'category' => $validated['bmi_category'],
+                ] ?? []
+            ]
         ]);
 
         return response()->json(['status' => 'success', 'message' => __('Medical Form Updated..!')]);
