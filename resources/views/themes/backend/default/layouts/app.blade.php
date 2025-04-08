@@ -649,7 +649,26 @@
 
         <script src="{{ asset('themes/backend/default/assets/js/pages/material-symbols.init.js')}}"></script>
 
-        @stack('scripts')
+        <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 
+        <script>
+            // Pusher'ı başlat
+            Pusher.logToConsole = true;
+
+            const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+                cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+                encrypted: true
+            });
+
+            // Kanalı dinle
+            const channel = pusher.subscribe('online-channel');
+            channel.bind('user.online', function(data) {
+                // Kullanıcı çevrimiçi olduğunda yapılacak işlemler
+                console.log('Kullanıcı çevrimiçi:', data);
+            });
+
+        </script>
+
+        @stack('scripts')
     </body>
 </html>

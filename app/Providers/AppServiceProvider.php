@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Arr;
@@ -34,6 +36,9 @@ class AppServiceProvider extends ServiceProvider
         //livewire path set ediliyor
         //Config::set('livewire.view_path', Str::replace('{theme}', $themeName, Config::get('livewire.view_path')));
 
+        View::composer('*', function($view){
+            $view->with('onlineUsers', Cache::get('onlineUsers', []));
+        });
 
         //
         Schema::defaultStringLength(191);
