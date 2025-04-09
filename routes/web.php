@@ -53,9 +53,10 @@ Route::post('/medical-forms/update', [MedicalForm::class, 'update'])->name('medi
 Route::post('/medical-forms/finishUpdate', [MedicalForm::class, 'finishUpdate'])->name('medical-forms.finishUpdate');
 
 Route::post('/inquiry/send', [App\Http\Controllers\API\InquiryController::class, 'store'])->name('inquiry.send');
-Route::get('/token', function () {
-    return csrf_token();
-});
+
+//routes for leads
+Route::post('/leads/web', [App\Http\Controllers\LeadController::class, 'web'])->name('leads.web');
+
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
