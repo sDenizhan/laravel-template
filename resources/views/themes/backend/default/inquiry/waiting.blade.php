@@ -97,15 +97,39 @@
     <script>
         $(document).ready(function(){
 
+            function createCountrySelect() {
+                var select = '<select id="country" class="form-select form-select-sm">';
+                select += '<option value="">{{ __('Select Country') }}</option>';
+                @foreach($countries as $country)
+                    select += '<option value="{{ $country->id }}">{{ $country->name }}</option>';
+                @endforeach
+                select += '</select>';
+                return select;
+            }
+
+            function createTreatmentSelect() {
+                var select = '<select id="treatment" class="form-select form-select-sm">';
+                select += '<option value="">{{ __('Select Treatment') }}</option>';
+                @foreach($treatments as $treatment)
+                    select += '<option value="{{ $treatment->id }}">{{ $treatment->name }}</option>';
+                @endforeach
+                select += '</select>';
+                return select;
+            }
+
+
             var table = $('#basic-datatable').DataTable({
                 processing: true,
                 serverSide: true,
+                dom : '<"row"<"col-sm-12 col-md-4 countries"><"col-sm-12 col-md-4 treatments"><"col-sm-12 col-md-2"f>>rt<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4"i><"col-sm-12 col-md-4"p>>',
                 ajax: {
                     url: "{{ route('admin.inquiries.waitingFilters') }}",
                     type: 'POST',
                     data: function (d) {
                         d._token = "{{ csrf_token() }}";
                         d.status = "{{ \App\Enums\InquiryStatus::WAITING->value }}";
+                        d.treatment = $('select#treatment').val();
+                        d.country = $('select#country').val();
                     }
                 },
                 columns: [
@@ -121,7 +145,6 @@
                         targets: 0,
                         data: 'action',
                         render : function (row, type, data) {
-                            console.log(data);
                             var html = '<div class="btn-group">';
                             html += '<div class="btn-group"><button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">...</button>';
                             html += '<div class="dropdown-menu">';
@@ -140,6 +163,24 @@
                         }
                     }
                 ]
+            });
+
+            $(document).on('change', 'select#country', function(e) {
+                e.preventDefault();
+                table.ajax.reload();
+            });
+
+            table.on('init.dt', function () {
+                let countries = createCountrySelect();
+                $('.countries').html('<div class="dataTables_length"><label>Country:</label>' + countries + '</div>');
+
+                let treatments = createTreatmentSelect();
+                $('.treatments').html('<div class="dataTables_length"><label>Treatment:</label>'+treatments+'</div>');
+
+                $('select#treatment, select#country').on('change', function() {
+                    table.ajax.reload();
+                });
+
             });
 
             $(document).on('click', '.show_inquiry', function(e) {

@@ -50,4 +50,16 @@ class User extends Authenticatable
     {
         return Cache::has('online-user-' . $this->id);
     }
+
+    public function getLastMounthInquiriesCount() : int
+    {
+        return $this->inquiries()
+            ->where('assignment_at', '>=', now()->subMonth())
+            ->count();
+    }
+
+    public function inquiries(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Inquiry::class, 'assignment_to');
+    }
 }

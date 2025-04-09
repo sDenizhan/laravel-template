@@ -71,11 +71,12 @@
                 <select class="form-control" id="coordinator_id" name="coordinator_id">
                     <option value="">{{ __('Select Coordinator') }}</option>
                     @foreach ($coordinators as $coordinator)
-                        <option value="{{ $coordinator->id }}" {{ $inquiry->coordinator_id == $coordinator->id ? 'selected' : '' }} @class([
-    'text-danger' => $coordinator->isOnline() == false,
-    'text-success' => $coordinator->isOnline(),
-])>
-                            {{ $coordinator->name }}
+                        <option value="{{ $coordinator->id }}" {{ $inquiry->coordinator_id == $coordinator->id ? 'selected' : '' }}
+                            @class([
+                                'text-danger' => $coordinator->isOnline() == false,
+                                'text-success' => $coordinator->isOnline(),
+                            ])>
+                            {{ $coordinator->name }} - {{ __(':count', ['count' => $coordinator->getLastMounthInquiriesCount()])  }}
                         </option>
                     @endforeach
                 </select>

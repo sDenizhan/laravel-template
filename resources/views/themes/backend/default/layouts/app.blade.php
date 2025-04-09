@@ -663,7 +663,6 @@
             // Kanalı dinle
             const channel = pusher.subscribe('online-channel');
             channel.bind('user.online', function(data) {
-                // Kullanıcı çevrimiçi olduğunda yapılacak işlemler
                 console.log('Kullanıcı çevrimiçi:', data);
             });
 

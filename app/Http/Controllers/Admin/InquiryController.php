@@ -41,7 +41,10 @@ class InquiryController extends Controller
 
     public function waiting()
     {
-        return view('inquiry.waiting');
+        $countries = CountryTranslation::where('locale', session()->get('locale') ?? 'tr')->orderBy('name', 'asc')->get();
+        $treatments = Treatments::all();
+
+        return view('inquiry.waiting', compact('countries', 'treatments'));
     }
 
     public function filter(Request $request) : \Illuminate\Http\JsonResponse
@@ -54,6 +57,8 @@ class InquiryController extends Controller
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
         $status = $request->input('status');
+        $country = $request->input('country');
+        $treatment = $request->input('treatment');
 
         // Filtreleme
         $search = $request->input('search.value');
@@ -66,13 +71,22 @@ class InquiryController extends Controller
             $query->where('assignment_to', auth()->id());
         }
 
+        //country
+        if ( !empty($country) ) {
+            $query->where('country_id', $country);
+        }
+
+        //treatment
+        if ( !empty($treatment) ) {
+            $query->where('treatment_id', $treatment);
+        }
+
         //search
         if ( !empty($search) ) {
             $query->where('name', 'like', '%'.$search.'%')
                 ->orWhere('surname', 'like', '%'.$search.'%')
                 ->orWhere('email', 'like', '%'.$search.'%')
                 ->orWhere('phone', 'like', '%'.$search.'%')
-                ->orWhere('country', 'like', '%'.$search.'%')
                 ->orWhereHas('treatment', function ($query) use ($search) {
                     $query->where('name', 'like', '%'.$search.'%');
                 });
