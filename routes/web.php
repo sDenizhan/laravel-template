@@ -53,26 +53,9 @@ Route::post('/medical-forms/update', [MedicalForm::class, 'update'])->name('medi
 Route::post('/medical-forms/finishUpdate', [MedicalForm::class, 'finishUpdate'])->name('medical-forms.finishUpdate');
 
 Route::post('/inquiry/send', [App\Http\Controllers\API\InquiryController::class, 'store'])->name('inquiry.send');
-
-
-//Route::prefix('webapi')->name('api.')->middleware([\App\Http\Middleware\CorsMiddleware::class])->group(function () {
-//
-//    Route::get('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'index'])->name('treatment.list');
-//    Route::post('/treatments', [App\Http\Controllers\API\TreatmentController::class, 'store'])->name('treatment.store');
-//
-//    Route::get('/hospitals', [App\Http\Controllers\API\HospitalController::class, 'index'])->name('hospital.list');
-//    Route::post('/hospitals', [App\Http\Controllers\API\HospitalController::class, 'store'])->name('hospital.store');
-//
-//    Route::get('/users', [App\Http\Controllers\API\UserController::class, 'index'])->name('user.list');
-//    Route::post('/users', [App\Http\Controllers\API\UserController::class, 'store'])->name('user.store');
-//
-//    //doctors
-//    Route::post('doctors', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
-//
-//    //inquiries
-//    Route::get('/inquiries/waiting', [App\Http\Controllers\API\InquiryController::class, 'waiting'])->name('inquiries.waiting');
-//
-//});
+Route::get('/token', function () {
+    return csrf_token();
+});
 
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
@@ -171,6 +154,7 @@ Route::prefix('api')->name('api.admin.')->group(function () {
 
     // Protected Routes
     Route::middleware('auth:sanctum')->group(function () {
+
         Route::apiResource('users', App\Http\Controllers\API\Users\UserController::class);
         //Route::apiResource('doctors', App\Http\Controllers\API\DoctorController::class);
         Route::apiResource('hospitals', App\Http\Controllers\API\Hospitals\HospitalController::class);

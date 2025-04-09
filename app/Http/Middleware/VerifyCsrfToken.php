@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         'medical-forms/*',
         'api/*',
         'webapi/*',
+        'inquiry/send',
     ];
 }
