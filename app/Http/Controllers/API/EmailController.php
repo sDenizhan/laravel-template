@@ -19,6 +19,10 @@ class EmailController extends Controller
 
         Mail::to($inquiry->email)->send(new SendngEmailForMedicalForm($inquiry, $subject, $message));
 
-        return response()->json(['message' => 'Email sent successfully']);
+        if (Mail::failures()) {
+            return response()->json(['status' => 'error', 'message' => 'Email sending failed'], 500);
+        } else {
+            return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
+        }
     }
 }

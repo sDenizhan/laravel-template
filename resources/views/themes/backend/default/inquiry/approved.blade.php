@@ -17,6 +17,7 @@
 @endsection
 
 @section('content')
+    <x-backend.inquiries.table.filters />
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -148,12 +149,21 @@
             var table = $('#datatable').DataTable({
                     processing: true,
                     serverSide: true,
+                    dom : '<"row">rt<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4"i><"col-sm-12 col-md-4"p>>',
                     ajax: {
-                        url: "{{ route('admin.inquiries.approvedFilters') }}",
+                        url: "{{ route('api.admin.inquiries.approved') }}",
                         type: 'POST',
                         data: function (d) {
                             d._token = "{{ csrf_token() }}";
                             d.status = "{{ \App\Enums\InquiryStatus::APPROVED->value }}";
+                            d.treatment = $('select#treatment').val();
+                            d.country = $('select#country').val();
+                            d.id = $('input#id').val();
+                            d.query = $('input#query').val();
+                            d.coordinator = $('select[name=coordinator]').val();
+                            d.start_date = $('input#start_date').val();
+                            d.end_date = $('input#end_date').val();
+                            d.language = $('select#language').val();
                         }
                     },
                     order : [[1, 'desc']],
@@ -327,6 +337,22 @@
                     ]
                 });
 
+            //ajax reload on treatment change
+            $('select').on('change', function() {
+                table.ajax.reload();
+            });
+
+            //search
+            $(document).on('keyup', 'input', function(e) {
+                e.preventDefault();
+
+                if ( $(this).attr('id') === 'id') {
+                    table.ajax.reload();
+                }
+                else if ( $(this).val().length > 2 || $(this).val().length === 0) {
+                    table.ajax.reload();
+                }
+            });
 
             //on hide remove class
             $('#inquiryModal').on('hidden.bs.modal', function () {

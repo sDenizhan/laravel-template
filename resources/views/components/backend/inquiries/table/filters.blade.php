@@ -90,10 +90,3 @@
         </div>
     </div>
 </div>
-
-@push('')
-<script>
-
-
-</script>
-@endpush

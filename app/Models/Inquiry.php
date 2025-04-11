@@ -32,4 +32,9 @@ class Inquiry extends Model
     {
         return $this->belongsTo(Country::class, 'country_id', 'id');
     }
+
+    public function reference(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referenced_user_id', 'id');
+    }
 }

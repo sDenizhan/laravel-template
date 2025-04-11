@@ -160,6 +160,9 @@ Route::prefix('api')->name('api.admin.')->group(function () {
         //Route::apiResource('doctors', App\Http\Controllers\API\DoctorController::class);
         Route::apiResource('hospitals', App\Http\Controllers\API\Hospitals\HospitalController::class);
 
+        //inquiry filters
+        Route::post('/inquiries/waiting', [App\Http\Controllers\API\Inquiries\InquiriesController::class, 'waiting'])->name('inquiries.waiting');
+        Route::post('/inquiries/approved', [App\Http\Controllers\API\Inquiries\InquiriesController::class, 'approved'])->name('inquiries.approved');
 
         Route::get('/doctors/get', [App\Http\Controllers\API\DoctorController::class, 'get'])->name( 'doctors.get');
         Route::post('/medical-form-sending-with-email', [App\Http\Controllers\API\EmailController::class, 'medicalFormSendingWithEmail'])->name('emails.medical-form-sending-with-email');

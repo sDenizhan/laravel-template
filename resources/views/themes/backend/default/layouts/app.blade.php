@@ -668,6 +668,8 @@
 
         </script>
 
+        @stack('scripts-before')
         @stack('scripts')
+        @stack('scripts-after')
     </body>
 </html>

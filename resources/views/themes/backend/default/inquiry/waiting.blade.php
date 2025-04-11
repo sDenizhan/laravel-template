@@ -17,11 +17,12 @@
 @endsection
 
 @section('content')
+
+<x-backend.inquiries.table.filters />
+
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">
-            </div>
             <div class="card-body">
                 <table id="basic-datatable" class="table dt-responsive nowrap w-100">
                     <thead>
@@ -32,6 +33,7 @@
                             <th>{{ __('Registration Date') }}</th>
                             <th>{{ __('Treatment') }}</th>
                             <th>{{ __('Country') }}</th>
+                            <th>{{ __('Referenced By') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -97,39 +99,24 @@
     <script>
         $(document).ready(function(){
 
-            function createCountrySelect() {
-                var select = '<select id="country" class="form-select form-select-sm">';
-                select += '<option value="">{{ __('Select Country') }}</option>';
-                @foreach($countries as $country)
-                    select += '<option value="{{ $country->id }}">{{ $country->name }}</option>';
-                @endforeach
-                select += '</select>';
-                return select;
-            }
-
-            function createTreatmentSelect() {
-                var select = '<select id="treatment" class="form-select form-select-sm">';
-                select += '<option value="">{{ __('Select Treatment') }}</option>';
-                @foreach($treatments as $treatment)
-                    select += '<option value="{{ $treatment->id }}">{{ $treatment->name }}</option>';
-                @endforeach
-                select += '</select>';
-                return select;
-            }
-
-
             var table = $('#basic-datatable').DataTable({
                 processing: true,
                 serverSide: true,
-                dom : '<"row"<"col-sm-12 col-md-4 countries"><"col-sm-12 col-md-4 treatments"><"col-sm-12 col-md-2"f>>rt<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4"i><"col-sm-12 col-md-4"p>>',
+                dom : '<"row">rt<"row"<"col-sm-12 col-md-4"l><"col-sm-12 col-md-4"i><"col-sm-12 col-md-4"p>>',
                 ajax: {
-                    url: "{{ route('admin.inquiries.waitingFilters') }}",
+                    url: "{{ route('api.admin.inquiries.waiting') }}",
                     type: 'POST',
                     data: function (d) {
                         d._token = "{{ csrf_token() }}";
                         d.status = "{{ \App\Enums\InquiryStatus::WAITING->value }}";
                         d.treatment = $('select#treatment').val();
                         d.country = $('select#country').val();
+                        d.id = $('input#id').val();
+                        d.query = $('input#query').val();
+                        d.coordinator = $('select[name=coordinator]').val();
+                        d.start_date = $('input#start_date').val();
+                        d.end_date = $('input#end_date').val();
+                        d.language = $('select#language').val();
                     }
                 },
                 columns: [
@@ -138,7 +125,8 @@
                     {data: 'name_surname', name: 'name'},
                     {data: 'registration_date', name: 'registration_date'},
                     {data: 'treatment', name: 'treatment'},
-                    {data: 'country', name: 'country'}
+                    {data: 'country', name: 'country'},
+                    {data: 'reference', name: 'referenced_by'},
                 ],
                 columnDefs : [
                     {
@@ -165,24 +153,24 @@
                 ]
             });
 
-            $(document).on('change', 'select#country', function(e) {
-                e.preventDefault();
+            //ajax reload on treatment change
+            $('select').on('change', function() {
                 table.ajax.reload();
             });
 
-            table.on('init.dt', function () {
-                let countries = createCountrySelect();
-                $('.countries').html('<div class="dataTables_length"><label>Country:</label>' + countries + '</div>');
+            //search
+            $(document).on('keyup', 'input', function(e) {
+                e.preventDefault();
 
-                let treatments = createTreatmentSelect();
-                $('.treatments').html('<div class="dataTables_length"><label>Treatment:</label>'+treatments+'</div>');
-
-                $('select#treatment, select#country').on('change', function() {
+                if ( $(this).attr('id') === 'id') {
                     table.ajax.reload();
-                });
-
+                }
+                else if ( $(this).val().length > 2 || $(this).val().length === 0) {
+                    table.ajax.reload();
+                }
             });
 
+            //
             $(document).on('click', '.show_inquiry', function(e) {
                 e.preventDefault();
                 var url = '{{ route('admin.inquiries.update', ['inquiry' => 'inquiryId']) }}';
