@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('process_logs', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
-            $table->bigInteger('customer_id');
-            $table->text('type'); // create, update, delete
-            $table->json('data')->nullable();
-            $table->text('model');
-            $table->integer('model_id')->nullable();
+            $table->string('action')->nullable();
+            $table->string('entity_type')->nullable();
+            $table->string('entity_id')->nullable();
+            $table->longText('description')->nullable();
+            $table->json('meta')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });

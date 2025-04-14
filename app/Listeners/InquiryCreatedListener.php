@@ -50,6 +50,12 @@ class InquiryCreatedListener
 
     public function createLog(InquiryCreated $event): void
     {
+        $user = User::find(auth()->user()->id);
+
+        if (!$user){
+            Log::log('error', 'User not found');
+        }
+
     }
 
     public function checkGender(InquiryCreated $event): void
