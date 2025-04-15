@@ -37,8 +37,8 @@ class InquiryObserver
             'entity_id' => $inquiry->id,
             'description' => 'Inquiry updated with ID: ' . $inquiry->id,
             'meta' => [
-                'old' => $inquiry->getOriginal(),
-                'new' => $inquiry->getChanges(),
+                'old' => json_encode($inquiry->getOriginal()),
+                'new' => json_encode($inquiry->getChanges()),
             ],
         ]);
     }
@@ -71,8 +71,8 @@ class InquiryObserver
             'entity_id' => $inquiry->id,
             'description' => 'Inquiry restored with ID: ' . $inquiry->id,
             'meta' => [
-                'old' => $inquiry->getOriginal(),
-                'new' => $inquiry->getChanges(),
+                'old' => json_encode($inquiry->getOriginal()),
+                'new' => json_encode($inquiry->getChanges()),
             ],
         ]);
     }
@@ -85,7 +85,7 @@ class InquiryObserver
         // Log the force deletion of the inquiry
         $this->createLog([
             'user_id' => auth()->user()->id ?? 0,
-            'action' => 'force deleted',
+            'action' => 'force_deleted',
             'entity_type' => Inquiry::class,
             'entity_id' => $inquiry->id,
             'description' => 'Inquiry force deleted with ID: ' . $inquiry->id,

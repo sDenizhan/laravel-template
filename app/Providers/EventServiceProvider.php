@@ -73,7 +73,12 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->observerLoader([
+            'App\Models\City' => 'App\Observers\CityObserver',
+            'App\Models\Country' => 'App\Observers\CountryObserver',
+            'App\Models\Calendar' => 'App\Observers\CalendarObserver',
+            'App\Models\Inquiry' => 'App\Observers\InquiryObserver',
+        ]);
     }
 
     /**
@@ -82,5 +87,16 @@ class EventServiceProvider extends ServiceProvider
     public function shouldDiscoverEvents(): bool
     {
         return false;
+    }
+
+    private function observerLoader(?array $observers = []): void
+    {
+        if (empty($observers)) {
+            return;
+        }
+
+        foreach ($observers as $model => $observer) {
+            $model::observe($observer);
+        }
     }
 }
