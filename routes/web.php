@@ -30,16 +30,66 @@ use App\Models\CountryTranslation;
 |
 */
 
-Route::get('/set', function () {
-    Artisan::command('storage:link', function (){
-        $this->info('Storage link created');
-    });
-    Artisan::command('cache:clear', function (){
-        $this->info('Cache cleared');
-    });
-    Artisan::command('migrate:fresh --seed', function (){
-        $this->info('Database migrated and seeded');
-    });
+Route::get('/sd/tools', function (){
+    $links = [
+        ['name' => 'Cache Clear', 'url' => '/sd/cache-clear'],
+        ['name' => 'Fresh Migrate', 'url' => '/sd/fresh-migrate'],
+        ['name' => 'Migrate', 'url' => '/sd/migrate'],
+        ['name' => 'Migrate Fresh, Seed and Storage Link', 'url' => '/sd/set'],
+    ];
+
+    foreach ($links as $link) {
+        echo '<a href="' . $link['url'] . '">' . $link['name'] . '</a><br>';
+    }
+});
+
+Route::get('/sd/set', function () {
+    $message = 'Sonuçlar: <br>';
+
+    Artisan::call('storage:link');
+    $message .= 'Storage link created <br>';
+
+    Artisan::call('cache:clear');
+    $message .= 'Cache cleared <br>';
+
+    Artisan::call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true,
+    ]);
+    $message .= 'Database migrated and seeded <br>';
+
+    echo $message;
+});
+
+Route::get('/sd/cache-clear', function () {
+    $message = 'Sonuçlar: <br>';
+
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    $message .= 'Cache cleared <br>';
+
+    echo $message;
+});
+
+Route::get('/sd/fresh-migrate', function () {
+    $message = 'Sonuçlar: <br>';
+    Artisan::call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true,
+    ]);
+    $message .= 'Database migrated and seeded <br>';
+    echo $message;
+});
+
+Route::get('/sd/migrate', function () {
+    $message = 'Sonuçlar: <br>';
+    Artisan::call('migrate', [
+        '--force' => true,
+    ]);
+    $message .= 'Database migrated <br>';
+    echo $message;
 });
 
 Route::get('/', function () {
