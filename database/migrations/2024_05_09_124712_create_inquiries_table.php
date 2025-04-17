@@ -33,9 +33,6 @@ return new class extends Migration
             $table->text('extra_data2')->nullable();
             $table->text('extra_data3')->nullable();
 
-            $table->foreign('treatment_id')->references('id')->on('treatments')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });
