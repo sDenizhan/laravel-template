@@ -16,5 +16,6 @@ class VerifyCsrfToken extends Middleware
         'api/*',
         'webapi/*',
         'inquiry/send',
+        'leads/*',
     ];
 }
