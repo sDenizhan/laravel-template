@@ -40,6 +40,8 @@ class Filters extends Component
         $countries = $this->countries;
         $coordinators = $this->coordinators;
 
+        dd($this->languages ?? 'No languages found');
+
         return view('components.backend.inquiries.table.filters', [
             'languages' => $languages,
             'treatments' => $treatments,
