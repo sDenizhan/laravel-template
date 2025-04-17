@@ -39,6 +39,12 @@ class Filters extends Component
         $treatments = $this->treatments;
         $countries = $this->countries;
         $coordinators = $this->coordinators;
-        return view('components.backend.inquiries.table.filters', compact('languages', 'treatments', 'countries', 'coordinators'));
+
+        return view('components.backend.inquiries.table.filters', [
+            'languages' => $languages,
+            'treatments' => $treatments,
+            'countries' => $countries,
+            'coordinators' => $coordinators,
+        ]);
     }
 }

@@ -18,7 +18,7 @@
 
 @section('content')
 
-<x-backend.inquiries.table.filters />
+<x-backend.inquiries.table.filters  />
 
 <div class="row">
     <div class="col-12">
