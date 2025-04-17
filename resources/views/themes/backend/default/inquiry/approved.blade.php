@@ -127,14 +127,14 @@
         src="{{ asset('themes/backend/default/assets/libs/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
     <script
         src="{{ asset('themes/backend/default/assets/libs/datatables.net-select/js/dataTables.select.min.js') }}"></script>
-    <script src=" {{ asset('themes/backend/default/assets/libs/pdfmake/build/pdfmake.min.js') }}"></script>
-    <script src=" {{ asset('themes/backend/default/assets/libs/pdfmake/build/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('themes/backend/default/assets/libs/pdfmake/build/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('themes/backend/default/assets/libs/pdfmake/build/vfs_fonts.js') }}"></script>
     <!-- third party js ends -->
 
     <script src="{{ asset('themes/backend/default/assets/libs/summernote/summernote.min.js') }}"></script>
 
     <!-- Datatables init -->
-    <script src=" {{ asset('themes/backend/default/assets/js/pages/datatables.init.js') }}"></script>
+    <script src="{{ asset('themes/backend/default/assets/js/pages/datatables.init.js') }}"></script>
     <script src="{{ asset('themes/backend/default/assets/js/pages/fontawesome.init.js') }}"></script>
 
     <!-- Sweet Alerts js -->
