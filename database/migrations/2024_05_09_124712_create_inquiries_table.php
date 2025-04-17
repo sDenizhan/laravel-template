@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('inquiries', function (Blueprint $table) {
             $table->id();
-            $table->integer('treatment_id')->unsigned();
+            $table->unsignedBigInteger('treatment_id');
             $table->integer('status')->default(\App\Enums\InquiryStatus::WAITING->value); //onaylandı, reddedildi, bekliyor,
             $table->integer('gender')->default(\App\Enums\Gender::None->value);
 
@@ -32,6 +32,10 @@ return new class extends Migration
             $table->text('extra_data1')->nullable();
             $table->text('extra_data2')->nullable();
             $table->text('extra_data3')->nullable();
+
+            $table->foreignId('treatment_id')
+                ->constrained('treatments')
+                ->onDelete('cascade');
 
             $table->timestamps();
             $table->softDeletes();
