@@ -35,6 +35,10 @@ class Filters extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.backend.inquiries.table.filters');
+        $languages = $this->languages;
+        $treatments = $this->treatments;
+        $countries = $this->countries;
+        $coordinators = $this->coordinators;
+        return view('components.backend.inquiries.table.filters', compact('languages', 'treatments', 'countries', 'coordinators'));
     }
 }
