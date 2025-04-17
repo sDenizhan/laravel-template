@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\View\Components\Backend\Inquiries\Table\Filters;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +41,9 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function($view){
             $view->with('onlineUsers', Cache::get('onlineUsers', []));
         });
+
+        //composer tetikleme
+        Blade::component('backend.inquiries.table.filters', Filters::class);
 
         //
         Schema::defaultStringLength(191);
