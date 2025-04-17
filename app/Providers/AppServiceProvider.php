@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         //composer tetikleme
-        //Blade::component('backend.inquiries.table.filters', Filters::class);
+        Blade::component('backend.inquiries.table.filters', Filters::class);
 
         //
         Schema::defaultStringLength(191);

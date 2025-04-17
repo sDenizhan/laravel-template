@@ -35,20 +35,16 @@ class Filters extends Component
      */
     public function render(): View|Closure|string
     {
+        $languages = $this->languages;
+        $treatments = $this->treatments;
+        $countries = $this->countries;
+        $coordinators = $this->coordinators;
 
-        dd('RENDERING FILTERS COMPONENT');
-//        $languages = $this->languages;
-//        $treatments = $this->treatments;
-//        $countries = $this->countries;
-//        $coordinators = $this->coordinators;
-//
-//        dd($this->languages ?? 'No languages found');
-//
-//        return view('components.backend.inquiries.table.filters', [
-//            'languages' => $languages,
-//            'treatments' => $treatments,
-//            'countries' => $countries,
-//            'coordinators' => $coordinators,
-//        ]);
+        return view('components.backend.inquiries.table.filters', [
+            'languages' => $languages,
+            'treatments' => $treatments,
+            'countries' => $countries,
+            'coordinators' => $coordinators,
+        ]);
     }
 }
