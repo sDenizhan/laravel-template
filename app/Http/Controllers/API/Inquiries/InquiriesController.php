@@ -48,7 +48,7 @@ class InquiriesController
         $search = $request->input('query');
 
         //main query
-        $query = Inquiry::with(['coordinator', 'treatment', 'country', 'countryTranslation'])->where(['status' => $status]);
+        $query = Inquiry::with(['coordinator', 'treatment', 'countryTranslation'])->where(['status' => $status]);
 
         //id
         if ( !empty($id) ) {

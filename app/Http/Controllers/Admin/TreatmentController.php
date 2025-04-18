@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTreatmentRequest;
 use App\Http\Requests\UpdateTreatmentRequest;
+use App\Models\Language;
 use App\Models\Treatments;
 use Illuminate\Http\Request;
 
@@ -33,7 +34,9 @@ class TreatmentController extends Controller
      */
     public function create()
     {
-        return view('treatments.create');
+        $languages = Language::all();
+
+        return view('treatments.create', compact('languages'));
     }
 
     /**
