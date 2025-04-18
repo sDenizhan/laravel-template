@@ -48,7 +48,7 @@ class InquiriesController
         $search = $request->input('query');
 
         //main query
-        $query = Inquiry::with(['coordinator', 'treatment'])->where(['status' => $status]);
+        $query = Inquiry::with(['coordinator', 'treatment', 'country', 'countryTranslation'])->where(['status' => $status]);
 
         //id
         if ( !empty($id) ) {
@@ -126,7 +126,7 @@ class InquiriesController
                 'coordinator' => $inquiry->coordinator->name ?? '-',
                 'registration_date' => $inquiry->created_at->format('d.m.Y H:i'),
                 'treatment' => $inquiry->treatment->name,
-                'country' => $inquiry->country->translations->first()->name ?? '-',
+                'country' => $inquiry->countryTranslation->name ?? '-',
                 'reference' => $inquiry->reference->name ?? '-',
                 'action' => ''
             ];

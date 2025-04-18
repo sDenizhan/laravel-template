@@ -33,6 +33,11 @@ class Inquiry extends Model
         return $this->belongsTo(Country::class, 'country_id', 'id');
     }
 
+    public function countryTranslation(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CountryTranslation::class, 'country_id', 'country_id');
+    }
+
     public function reference(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class, 'referenced_user_id', 'id');
